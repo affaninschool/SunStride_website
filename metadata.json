@@ -1,0 +1,6 @@
+{
+  "name": "SunStride Smart Station",
+  "description": "An engineering research project combining smart public transportation infrastructure with hybrid solar and piezoelectric renewable energy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
