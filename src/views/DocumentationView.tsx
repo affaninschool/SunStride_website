@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageTab } from '../types';
 import { FileText, Printer, Check, Copy, ChevronRight, Download, BookOpen, ShieldCheck } from 'lucide-react';
+import { SunStrideLogo } from '../components/SunStrideLogo';
 
 interface DocumentationViewProps {
   onSelectTab: (tab: PageTab) => void;
@@ -101,6 +102,45 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
 
             {/* Document Content (Right 8 Cols) */}
             <div className="lg:col-span-8 bg-white p-6 sm:p-10 rounded-lg border border-[#E2E4E8] shadow-xs space-y-12 text-sm leading-relaxed text-[#374151]">
+              {/* Whitepaper Header Banner with Logo & Authorship */}
+              <div className="border-b border-[#E2E4E8] pb-6 space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-xl bg-[#F4F5F7] border border-[#E2E4E8] flex items-center justify-center p-1.5 shadow-xs">
+                      <SunStrideLogo size={40} />
+                    </div>
+                    <div>
+                      <h3 className="font-display font-bold text-lg text-[#1A1A1A]">SUNSTRIDE RESEARCH SPECIFICATION</h3>
+                      <p className="text-[11px] font-mono text-[#6B7280]">ATL ENGINEERING SPEC // REV 1.0.4</p>
+                    </div>
+                  </div>
+                  <div className="hidden sm:flex flex-col items-end text-[10px] font-mono text-[#6B7280]">
+                    <span className="text-emerald-700 font-semibold">VERIFIED SPECIFICATION</span>
+                    <span>ISO/IEC 18000-6C</span>
+                  </div>
+                </div>
+
+                {/* Author & Mentor Tagline */}
+                <div className="p-3 rounded-lg bg-[#F8F9FB] border border-[#E2E4E8] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+                  <div>
+                    <span className="text-[#6B7280]">PROJECT CREATOR: </span>
+                    <strong className="text-[#1A1A1A]">Affan Adil (Class VIII, PM Shri JNV)</strong>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#6B7280]">MENTOR: </span>
+                    <strong className="text-[#1A1A1A]">Mrinmoy Chowhan (ATL Mentor)</strong>
+                    <a
+                      href="https://mrinmoychowhan.lovable.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-emerald-700 hover:underline inline-flex items-center gap-0.5 font-bold"
+                    >
+                      <span>[Portfolio]</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
               {/* 1. PROJECT OVERVIEW */}
               <div id="sec-overview" className="space-y-3 scroll-mt-28">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 01</span>

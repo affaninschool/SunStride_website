@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageTab } from '../types';
 import { BookOpen, ArrowRight, HelpCircle, Lightbulb, Wrench, CheckCircle } from 'lucide-react';
+import { SunStrideLogo } from '../components/SunStrideLogo';
 
 interface AboutViewProps {
   onSelectTab: (tab: PageTab) => void;
@@ -93,16 +94,26 @@ export const AboutView: React.FC<AboutViewProps> = ({ onSelectTab }) => {
           </div>
 
           {/* Stage 4: The Prototype */}
-          <div className="border-l-2 border-neutral-300 pl-6 sm:pl-8 space-y-3 relative">
+          <div className="border-l-2 border-neutral-300 pl-6 sm:pl-8 space-y-4 relative">
             <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center text-[9px] font-mono font-bold">
               4
             </div>
             <span className="font-mono text-xs font-bold text-neutral-500 uppercase tracking-wider">
               STAGE 04 // PHYSICAL EMBODIMENT
             </span>
-            <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">
-              THE PROTOTYPE: SUNSTRIDE SMART STATION
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-1 pb-2">
+              <div className="w-16 h-16 rounded-xl bg-white border border-[#E2E4E8] flex items-center justify-center p-2 shadow-xs shrink-0">
+                <SunStrideLogo size={52} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">
+                  THE PROTOTYPE: SUNSTRIDE SMART STATION
+                </h2>
+                <p className="text-xs font-mono text-[#6B7280]">
+                  OFFICIAL ATL RESEARCH EMBODIMENT & EMBEDDED HARVESTING BENCH
+                </p>
+              </div>
+            </div>
             <p className="text-sm sm:text-base text-[#4B5563] leading-relaxed">
               SunStride stands today as a physical laboratory proof-of-concept. It proves that with thoughtful sub-milliwatt electronic design and passive micro-harvesting, civil public infrastructure can become active, communicative, and energy-aware.
             </p>

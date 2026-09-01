@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sun, Footprints, Radio, Cpu, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
+import { SunStrideLogo } from './SunStrideLogo';
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -76,8 +77,11 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-center mb-8"
+              className="text-center mb-8 flex flex-col items-center"
             >
+              <div className="w-16 h-16 rounded-2xl bg-neutral-900 border border-neutral-700/80 flex items-center justify-center p-2 mb-3 shadow-lg shadow-amber-500/5">
+                <SunStrideLogo size={52} darkTheme />
+              </div>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                 <span className="text-xs tracking-[0.25em] text-neutral-400 font-semibold uppercase">

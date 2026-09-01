@@ -14,6 +14,13 @@
     overflow-x: hidden;
   }
 
+  /* Hide default cursor on desktop/fine-pointer devices for custom magnetic cursor */
+  @media (pointer: fine) {
+    *, *::before, *::after, html, body, a, button, input, select, textarea, [role="button"], label {
+      cursor: none !important;
+    }
+  }
+
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
     letter-spacing: -0.025em;

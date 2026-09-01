@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageTab } from '../types';
 import { ArrowUpRight, Cpu, Radio, Sun } from 'lucide-react';
+import { SunStrideLogo } from './SunStrideLogo';
 
 interface FooterProps {
   onSelectTab: (tab: PageTab) => void;
@@ -19,8 +20,8 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
           {/* Col 1 & 2: Brand and Mission */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded bg-white text-[#14171C] flex items-center justify-center font-display font-bold text-xs shadow-xs">
-                SS
+              <div className="w-9 h-9 rounded-lg bg-neutral-900 border border-neutral-700/80 flex items-center justify-center p-1 shadow-xs">
+                <SunStrideLogo size={30} darkTheme />
               </div>
               <span className="font-display font-bold text-xl tracking-tight text-white">
                 SUNSTRIDE
@@ -124,7 +125,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
                   onClick={() => handleNavClick('team')}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
-                  Engineering Team
+                  Project Credits & Mentor
                 </button>
               </li>
               <li>

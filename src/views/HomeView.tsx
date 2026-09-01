@@ -13,9 +13,14 @@ import {
   CheckCircle2, 
   Activity,
   Layers,
-  ArrowDown
+  ArrowDown,
+  Sparkles,
+  Play,
+  Compass
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { SunStrideLogo } from '../components/SunStrideLogo';
+import { ProjectTourModal } from '../components/ProjectTourModal';
 
 interface HomeViewProps {
   onSelectTab: (tab: PageTab) => void;
@@ -25,6 +30,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
   const [selectedStationComponent, setSelectedStationComponent] = useState<string>('rfid');
   const [activeWorkFlowStep, setActiveWorkFlowStep] = useState<number>(1);
   const [heroPulseActive, setHeroPulseActive] = useState<boolean>(true);
+  const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
 
   const stationComponents = [
     {
@@ -82,9 +88,10 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
       {/* 1. HERO SECTION */}
       <section className="relative w-full border-b border-[#E2E4E8] bg-tech-grid pt-12 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Scientific Status Tag */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-[#E2E4E8]/90 border border-[#DCDFE4] text-[11px] font-mono font-semibold uppercase tracking-wider mb-6 text-[#374151]">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          {/* Scientific Status Tag with Official Logo */}
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-lg bg-[#E2E4E8]/90 border border-[#DCDFE4] text-[11px] font-mono font-semibold uppercase tracking-wider mb-6 text-[#374151] shadow-xs">
+            <SunStrideLogo size={22} />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>ATL ENGINEERING RESEARCH · APPLIED TRANSIT & HARVESTING SYSTEM</span>
           </div>
 
@@ -111,11 +118,12 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
 
                 <button
                   id="hero-secondary-cta"
-                  onClick={() => onSelectTab('lab')}
-                  className="flex items-center justify-center gap-2.5 bg-white hover:bg-neutral-50 border border-[#DCDFE4] text-[#1A1A1A] font-mono font-semibold text-xs uppercase tracking-wider px-6 py-3.5 rounded transition-all cursor-pointer shadow-xs group"
+                  onClick={() => setIsTourOpen(true)}
+                  className="flex items-center justify-center gap-2.5 bg-gradient-to-r from-amber-50 to-emerald-50 hover:from-amber-100 hover:to-emerald-100 border border-amber-300/90 text-[#1A1A1A] font-mono font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded transition-all cursor-pointer shadow-xs group"
                 >
-                  <span>ENTER INTERACTIVE LAB</span>
-                  <Activity className="w-4 h-4 text-emerald-600 group-hover:rotate-12 transition-transform" />
+                  <Sparkles className="w-4 h-4 text-amber-600 group-hover:rotate-12 transition-transform" />
+                  <span>2-MIN GUIDED TOUR (10 SLIDES)</span>
+                  <Play className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600 ml-0.5" />
                 </button>
               </div>
 
@@ -584,6 +592,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
           </div>
         </div>
       </section>
+
+      {/* 2-Minute 10-Slide Project Tour Modal Overlay */}
+      <ProjectTourModal
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onNavigateToLab={() => onSelectTab('lab')}
+        onNavigateToDocs={() => onSelectTab('docs')}
+      />
     </div>
   );
 };

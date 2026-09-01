@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageTab } from '../types';
-import { Radio, ArrowRight, Menu, X, Cpu, ShieldCheck } from 'lucide-react';
+import { Radio, ArrowRight, Menu, X, Cpu, ShieldCheck, ExternalLink, LayoutDashboard } from 'lucide-react';
+import { SunStrideLogo } from './SunStrideLogo';
 
 interface NavbarProps {
   activeTab: PageTab;
@@ -74,8 +75,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
           onClick={() => handleNavClick('home')}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-8 h-8 rounded bg-[#1A1A1A] text-white flex items-center justify-center font-display font-bold text-sm tracking-tighter group-hover:bg-neutral-800 transition-colors shadow-xs">
-            SS
+          <div className="w-10 h-10 rounded-lg bg-white border border-[#E2E4E8] flex items-center justify-center p-1 group-hover:border-amber-400/80 transition-all shadow-xs">
+            <SunStrideLogo size={32} />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
@@ -118,14 +119,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
 
         {/* Action Button & Secondary Links */}
         <div className="hidden lg:flex items-center gap-4">
-          <button
-            id="nav-cta-interactive-lab"
-            onClick={() => handleNavClick('lab')}
-            className="flex items-center gap-2 bg-[#1A1A1A] hover:bg-neutral-800 text-[#F4F5F7] text-xs font-mono font-semibold px-4 py-2 rounded transition-all cursor-pointer shadow-xs group"
+          <a
+            id="nav-cta-dashboard"
+            href="https://pedomatrix-bit.github.io/SunStride_Dashboard/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-[#0A0A0A] hover:bg-neutral-900 text-[#F4F5F7] text-xs font-mono font-semibold px-4 py-2 rounded-lg transition-all cursor-pointer shadow-sm group border border-neutral-800"
           >
-            <span>ENTER INTERACTIVE LAB</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </button>
+            <LayoutDashboard className="w-3.5 h-3.5 text-amber-400" />
+            <span>OPEN DASHBOARD</span>
+            <ExternalLink className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+          </a>
         </div>
 
         {/* Mobile Hamburger Menu Button */}
@@ -184,13 +188,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
             ))}
           </div>
 
-          <button
-            id="mobile-cta-lab-btn"
-            onClick={() => handleNavClick('lab')}
-            className="w-full mt-3 flex items-center justify-center gap-2 bg-[#1A1A1A] text-white py-3 rounded font-mono text-xs font-bold"
+          <a
+            id="mobile-cta-dashboard-btn"
+            href="https://pedomatrix-bit.github.io/SunStride_Dashboard/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full mt-3 flex items-center justify-center gap-2 bg-[#0A0A0A] hover:bg-neutral-900 text-white py-3 rounded-lg font-mono text-xs font-bold border border-neutral-800 shadow-sm"
           >
-            <span>ENTER INTERACTIVE LAB →</span>
-          </button>
+            <LayoutDashboard className="w-4 h-4 text-amber-400" />
+            <span>OPEN DASHBOARD</span>
+            <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+          </a>
         </div>
       )}
     </header>
