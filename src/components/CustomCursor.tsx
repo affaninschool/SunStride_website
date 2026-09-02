@@ -15,6 +15,8 @@ export const CustomCursor: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [cursorType, setCursorType] = useState<'default' | 'button' | 'interactive' | 'crosshair' | 'text'>('default');
   const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
+  const [isOverTour, setIsOverTour] = useState<boolean>(false);
+  const [isDarkSurface, setIsDarkSurface] = useState<boolean>(false);
   const [magneticPos, setMagneticPos] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
 
   // Mouse coordinates
@@ -44,10 +46,17 @@ export const CustomCursor: React.FC = () => {
         trailRefs.current = Array.from({ length: TRAIL_COUNT }, () => ({ x: clientX, y: clientY }));
       }
 
-      // Magnetic detection
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
+      // Context detection (Tour Modal, dark surfaces, etc.)
+      const tourEl = target.closest('[data-tour-modal], .tour-modal-overlay, .tour-modal-container') as HTMLElement | null;
+      const darkEl = !!tourEl || !!target.closest('.dark, .bg-neutral-900, .bg-neutral-950, .bg-[#121417], .bg-[#0A0A0A], footer, [data-theme="dark"]');
+      
+      setIsOverTour(!!tourEl);
+      setIsDarkSurface(darkEl);
+
+      // Magnetic detection
       const interactiveEl = target.closest('button, a, [role="button"], input[type="range"], select, .cursor-magnetic') as HTMLElement | null;
       const textInputEl = target.closest('input[type="text"], input[type="email"], textarea') as HTMLElement | null;
       const diagramEl = target.closest('[data-cursor="crosshair"], svg, canvas, .diagram-area') as HTMLElement | null;
@@ -164,6 +173,35 @@ export const CustomCursor: React.FC = () => {
 
   // Determine active theme color
   const getThemeColor = () => {
+    if (isOverTour) {
+      // High-contrast luminous palette specially tuned for the 2-Minute Slide Tour
+      switch (cursorType) {
+        case 'button':
+          return '#10B981'; // Bright Neon Emerald on clickable actions
+        case 'interactive':
+          return '#FBBF24'; // Radiant Solar Amber Gold on interactive cards
+        case 'crosshair':
+          return '#38BDF8'; // Bright Cyan for technical diagrams
+        case 'text':
+          return '#60A5FA'; // Luminous Sky Blue
+        default:
+          return '#F59E0B'; // Vivid SunStride Amber Gold default for high visibility
+      }
+    }
+
+    if (isDarkSurface) {
+      switch (cursorType) {
+        case 'button':
+          return '#34D399';
+        case 'interactive':
+          return '#FBBF24';
+        case 'crosshair':
+          return '#38BDF8';
+        default:
+          return '#F59E0B';
+      }
+    }
+
     switch (cursorType) {
       case 'button':
         return '#059669'; // Emerald
@@ -181,31 +219,41 @@ export const CustomCursor: React.FC = () => {
   const themeColor = getThemeColor();
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden select-none">
+    <div className="pointer-events-none fixed inset-0 z-[99999] overflow-hidden select-none">
       {/* Outer Magnetic Aura / Target Snap Ring */}
       <div
         ref={auraElementRef}
         className="fixed top-0 left-0 pointer-events-none rounded-full transition-all duration-200 ease-out flex items-center justify-center"
         style={{
-          width: cursorType === 'button' ? (magneticPos ? 42 : 36) : cursorType === 'crosshair' ? 32 : cursorType === 'interactive' ? 40 : 26,
-          height: cursorType === 'button' ? (magneticPos ? 42 : 36) : cursorType === 'crosshair' ? 32 : cursorType === 'interactive' ? 40 : 26,
+          width: cursorType === 'button' ? (magneticPos ? 46 : 38) : cursorType === 'crosshair' ? 34 : cursorType === 'interactive' ? 42 : 28,
+          height: cursorType === 'button' ? (magneticPos ? 46 : 38) : cursorType === 'crosshair' ? 34 : cursorType === 'interactive' ? 42 : 28,
           border: `1.5px solid ${themeColor}`,
-          backgroundColor: cursorType === 'button' ? 'rgba(5, 150, 105, 0.08)' : 'transparent',
-          opacity: cursorType === 'default' ? 0.4 : 0.85,
+          backgroundColor: isOverTour
+            ? (cursorType === 'button' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.12)')
+            : (cursorType === 'button' ? 'rgba(5, 150, 105, 0.08)' : 'transparent'),
+          boxShadow: isOverTour
+            ? `0 0 16px ${themeColor}66, inset 0 0 8px ${themeColor}33`
+            : isDarkSurface
+            ? `0 0 12px ${themeColor}44`
+            : 'none',
+          opacity: cursorType === 'default' ? (isOverTour ? 0.9 : 0.4) : 0.95,
           transform: `scale(${isMouseDown ? 0.8 : 1})`,
         }}
       >
         {/* Crosshair precision marks */}
         {cursorType === 'crosshair' && (
           <div className="absolute inset-0 flex items-center justify-center opacity-70">
-            <div className="w-full h-[1px] bg-sky-600" />
-            <div className="h-full w-[1px] bg-sky-600 absolute" />
+            <div className="w-full h-[1px]" style={{ backgroundColor: themeColor }} />
+            <div className="h-full w-[1px] absolute" style={{ backgroundColor: themeColor }} />
           </div>
         )}
 
         {/* Magnetic indicator dot */}
         {magneticPos && (
-          <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          <div
+            className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-ping"
+            style={{ backgroundColor: themeColor }}
+          />
         )}
       </div>
 
@@ -226,14 +274,22 @@ export const CustomCursor: React.FC = () => {
               style={{
                 width: `${size}px`,
                 height: `${size}px`,
-                backgroundColor: isLead ? themeColor : i < 3 ? themeColor : '#374151',
+                backgroundColor: isLead
+                  ? themeColor
+                  : i < 3
+                  ? themeColor
+                  : isOverTour
+                  ? '#D97706'
+                  : isDarkSurface
+                  ? '#9CA3AF'
+                  : '#374151',
                 opacity: isLead ? 1 : opacity,
                 boxShadow: isLead
-                  ? `0 0 8px ${themeColor}66`
+                  ? `0 0 10px ${themeColor}aa`
                   : i < 3
-                  ? `0 0 4px ${themeColor}33`
+                  ? `0 0 6px ${themeColor}55`
                   : 'none',
-                zIndex: 50 + (TRAIL_COUNT - i),
+                zIndex: 99999 + (TRAIL_COUNT - i),
               }}
             />
           );

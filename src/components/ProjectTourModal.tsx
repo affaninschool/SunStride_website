@@ -444,14 +444,18 @@ export const ProjectTourModal: React.FC<ProjectTourModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 select-none">
+      <div
+        data-tour-modal="true"
+        className="tour-modal-overlay fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 select-none"
+      >
         {/* Modal Window Container */}
         <motion.div
+          data-tour-modal="true"
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="relative w-full max-w-5xl bg-[#121417] border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-white max-h-[92vh]"
+          className="tour-modal-container relative w-full max-w-5xl bg-[#121417] border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-white max-h-[92vh]"
         >
           {/* TOP BAR: Header & Controls */}
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-800 bg-neutral-950/80">
