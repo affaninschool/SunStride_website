@@ -814,6 +814,16 @@ export const ProjectTourModal: React.FC<ProjectTourModalProps> = ({
                 </button>
               ) : (
                 <div className="flex items-center gap-2">
+                  <a
+                    id="tour-cta-dashboard"
+                    href="https://affaninschool.github.io/SunStride_Dashboard/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-neutral-950 font-mono text-xs font-bold transition-all cursor-pointer shadow-md shadow-amber-500/20"
+                  >
+                    <span>LIVE DASHBOARD</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                   {onNavigateToLab && (
                     <button
                       onClick={() => {
@@ -830,7 +840,7 @@ export const ProjectTourModal: React.FC<ProjectTourModalProps> = ({
                     onClick={onClose}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white font-mono text-xs font-semibold transition-all cursor-pointer"
                   >
-                    <span>CLOSE TOUR</span>
+                    <span>CLOSE</span>
                   </button>
                 </div>
               )}

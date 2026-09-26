@@ -92,6 +92,18 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
                   <ArrowUpRight className="w-3 h-3" />
                 </button>
               </li>
+              <li>
+                <a
+                  id="footer-link-dashboard"
+                  href="https://affaninschool.github.io/SunStride_Dashboard/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-amber-400 text-amber-400/90 font-semibold transition-colors cursor-pointer text-left flex items-center gap-1"
+                >
+                  <span>Live Dashboard</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </a>
+              </li>
             </ul>
           </div>
 

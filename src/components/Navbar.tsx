@@ -121,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
         <div className="hidden lg:flex items-center gap-4">
           <a
             id="nav-cta-dashboard"
-            href="https://pedomatrix-bit.github.io/SunStride_Dashboard/"
+            href="https://affaninschool.github.io/SunStride_Dashboard/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-[#0A0A0A] hover:bg-neutral-900 text-[#F4F5F7] text-xs font-mono font-semibold px-4 py-2 rounded-lg transition-all cursor-pointer shadow-sm group border border-neutral-800"
@@ -190,7 +190,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
 
           <a
             id="mobile-cta-dashboard-btn"
-            href="https://pedomatrix-bit.github.io/SunStride_Dashboard/"
+            href="https://affaninschool.github.io/SunStride_Dashboard/"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full mt-3 flex items-center justify-center gap-2 bg-[#0A0A0A] hover:bg-neutral-900 text-white py-3 rounded-lg font-mono text-xs font-bold border border-neutral-800 shadow-sm"
