@@ -11,6 +11,7 @@ export type PageTab =
 
 export interface BusData {
   id: string;
+  code?: string;
   routeNumber: string;
   name: string;
   origin: string;
@@ -21,6 +22,7 @@ export interface BusData {
   scheduledTime: string;
   speedKmh: number;
   status: 'En Route' | 'Approaching' | 'At Station' | 'Departed';
+  stops?: string[];
 }
 
 export interface SystemComponent {
