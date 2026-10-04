@@ -102,8 +102,8 @@ export const AboutView: React.FC<AboutViewProps> = ({ onSelectTab }) => {
               STAGE 04 // PHYSICAL EMBODIMENT
             </span>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-1 pb-2">
-              <div className="w-16 h-16 rounded-xl bg-white border border-[#E2E4E8] flex items-center justify-center p-2 shadow-xs shrink-0">
-                <SunStrideLogo size={52} />
+              <div className="w-16 h-16 rounded-xl bg-white border border-[#E2E4E8] flex items-center justify-center p-1.5 shadow-xs shrink-0 overflow-hidden">
+                <SunStrideLogo size={52} zoom={1.15} />
               </div>
               <div>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">

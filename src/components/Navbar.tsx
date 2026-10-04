@@ -75,8 +75,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
           onClick={() => handleNavClick('home')}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-lg bg-white border border-[#E2E4E8] flex items-center justify-center p-1 group-hover:border-amber-400/80 transition-all shadow-xs">
-            <SunStrideLogo size={32} />
+          <div className="w-10 h-10 rounded-lg bg-white border border-[#E2E4E8] flex items-center justify-center p-0.5 overflow-hidden group-hover:border-amber-400/80 transition-all shadow-xs">
+            <SunStrideLogo size={36} zoom={1.15} />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">

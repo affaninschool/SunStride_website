@@ -79,8 +79,8 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
               transition={{ duration: 0.5 }}
               className="text-center mb-8 flex flex-col items-center"
             >
-              <div className="w-16 h-16 rounded-2xl bg-neutral-900 border border-neutral-700/80 flex items-center justify-center p-2 mb-3 shadow-lg shadow-amber-500/5">
-                <SunStrideLogo size={52} darkTheme />
+              <div className="w-16 h-16 rounded-2xl bg-neutral-900 border border-neutral-700/80 flex items-center justify-center p-1.5 mb-3 shadow-lg shadow-amber-500/5 overflow-hidden">
+                <SunStrideLogo size={52} darkTheme zoom={1.15} />
               </div>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />

@@ -106,8 +106,8 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               <div className="border-b border-[#E2E4E8] pb-6 space-y-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-xl bg-[#F4F5F7] border border-[#E2E4E8] flex items-center justify-center p-1.5 shadow-xs">
-                      <SunStrideLogo size={40} />
+                    <div className="w-12 h-12 rounded-xl bg-[#F4F5F7] border border-[#E2E4E8] flex items-center justify-center p-1 shadow-xs overflow-hidden">
+                      <SunStrideLogo size={42} zoom={1.15} />
                     </div>
                     <div>
                       <h3 className="font-display font-bold text-lg text-[#1A1A1A]">SUNSTRIDE RESEARCH SPECIFICATION</h3>

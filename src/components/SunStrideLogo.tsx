@@ -6,17 +6,19 @@ interface SunStrideLogoProps {
   size?: number | string;
   variant?: 'full' | 'symbol' | 'monochrome';
   darkTheme?: boolean;
+  zoom?: number;
 }
 
 export const SunStrideLogo: React.FC<SunStrideLogoProps> = ({
   className = '',
-  size = 36,
+  size = 38,
   darkTheme = false,
+  zoom = 1.15,
 }) => {
-  const dimensionStyle =
+  const dimensionStyle: React.CSSProperties =
     typeof size === 'number'
-      ? { width: size, height: size }
-      : { width: size, height: size };
+      ? { width: size, height: size, transform: `scale(${zoom})` }
+      : { width: size, height: size, transform: `scale(${zoom})` };
 
   return (
     <img

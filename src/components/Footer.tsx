@@ -20,8 +20,8 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
           {/* Col 1 & 2: Brand and Mission */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-neutral-900 border border-neutral-700/80 flex items-center justify-center p-1 shadow-xs">
-                <SunStrideLogo size={30} darkTheme />
+              <div className="w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-700/80 flex items-center justify-center p-0.5 overflow-hidden shadow-xs">
+                <SunStrideLogo size={34} zoom={1.15} darkTheme />
               </div>
               <span className="font-display font-bold text-xl tracking-tight text-white">
                 SUNSTRIDE
