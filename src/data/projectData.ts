@@ -324,6 +324,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     areaOfFocus: 'Renewable Micro-Harvesting · RFID Telemetry · Embedded State Logic · Civic Transit Ergonomics',
     bio: 'A passionate young student innovator from Class VIII at PM Shri Jawahar Navodaya Vidyalaya. Affan conceived and developed the SunStride smart transit shelter prototype in the school Atal Tinkering Lab to solve commuter waiting uncertainty and eliminate grid power dependency in public transportation infrastructure.',
     toolsUsed: ['Embedded C', 'Solar MPPT Prototyping', 'Piezo Transducer Tuning', 'RFID Interrogators', '3D CAD & Mechanical Modeling', 'Sensor Benchmarking'],
+    portfolioUrl: 'https://affanadil.lovable.app/',
   },
   {
     id: 'mrinmoy-chowhan',
@@ -333,5 +334,6 @@ export const TEAM_MEMBERS: TeamMember[] = [
     areaOfFocus: 'ATL Mentorship · Hardware Debugging · Scientific Methodology · Prototyping Safety',
     bio: 'Atal Tinkering Lab (ATL) Mentor who guided and assisted Affan Adil throughout the experimentation, rapid prototyping, component sourcing, and testing phases of the SunStride project at PM Shri Jawahar Navodaya Vidyalaya.',
     toolsUsed: ['Lab Instrumentation', 'Electronics Debugging', 'Technical Mentorship', 'Rapid Prototyping Guidance'],
+    portfolioUrl: 'https://mrinmoychowhan.lovable.app/',
   },
 ];

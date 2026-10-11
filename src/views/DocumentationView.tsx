@@ -122,9 +122,17 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
 
                 {/* Author & Mentor Tagline */}
                 <div className="p-3 rounded-lg bg-[#F8F9FB] border border-[#E2E4E8] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
-                  <div>
+                  <div className="flex items-center gap-2">
                     <span className="text-[#6B7280]">PROJECT CREATOR: </span>
                     <strong className="text-[#1A1A1A]">Affan Adil (Class VIII, PM Shri JNV)</strong>
+                    <a
+                      href="https://affanadil.lovable.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-700 hover:underline inline-flex items-center gap-0.5 font-bold"
+                    >
+                      <span>[Portfolio]</span>
+                    </a>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#6B7280]">MENTOR: </span>

@@ -113,11 +113,26 @@ export const TeamView: React.FC<TeamViewProps> = ({ onSelectTab }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:items-end gap-1 font-mono text-xs text-[#6B7280]">
-                <span className="px-3 py-1 rounded bg-[#1A1A1A] text-white font-bold text-[11px]">
-                  ALL INVENTIVE CREDITS
-                </span>
-                <span className="text-[11px]">Sole Concept & System Design</span>
+              <div className="flex flex-col sm:items-end gap-2.5 font-mono text-xs text-[#6B7280]">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded bg-[#1A1A1A] text-white font-bold text-[11px]">
+                    ALL INVENTIVE CREDITS
+                  </span>
+                  <span className="text-[11px] hidden sm:inline">Sole Concept & System Design</span>
+                </div>
+
+                {/* Prominent Portfolio Link for Creator */}
+                <a
+                  id="creator-portfolio-link"
+                  href="https://affanadil.lovable.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#1A1A1A] hover:bg-neutral-800 text-white font-mono font-bold text-xs px-5 py-3 rounded-lg transition-all shadow-xs group border border-amber-500/80 cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                  <span>VISIT AFFAN'S PORTFOLIO</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
               </div>
             </div>
 
@@ -174,6 +189,18 @@ export const TeamView: React.FC<TeamViewProps> = ({ onSelectTab }) => {
                     </p>
                   </div>
                 </div>
+
+                <div className="pt-2">
+                  <a
+                    id="affan-portfolio-inline-link"
+                    href="https://affanadil.lovable.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-mono font-bold text-amber-700 hover:text-amber-800 hover:underline"
+                  >
+                    <span>View Affan Adil's innovator portfolio at affanadil.lovable.app →</span>
+                  </a>
+                </div>
               </div>
 
               {/* Right Column: Key Focus Areas & Tools */}
@@ -202,6 +229,22 @@ export const TeamView: React.FC<TeamViewProps> = ({ onSelectTab }) => {
                         </span>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <a
+                      id="affan-portfolio-sidebar-btn"
+                      href="https://affanadil.lovable.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2 px-3 rounded bg-white hover:bg-neutral-50 border border-[#DCDFE4] text-xs font-mono font-semibold text-[#1A1A1A] flex items-center justify-between group transition-colors cursor-pointer"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Open Portfolio</span>
+                      </span>
+                      <ExternalLink className="w-3.5 h-3.5 text-[#6B7280] group-hover:text-[#1A1A1A]" />
+                    </a>
                   </div>
                 </div>
 

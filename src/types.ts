@@ -65,6 +65,7 @@ export interface TeamMember {
   areaOfFocus: string;
   bio: string;
   toolsUsed: string[];
+  portfolioUrl?: string;
 }
 
 export interface LabConnectionNode {
