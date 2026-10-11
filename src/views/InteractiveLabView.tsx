@@ -31,13 +31,18 @@ import {
   Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { EnergyLab } from '../components/EnergyLab';
 
 interface InteractiveLabViewProps {
   onSelectTab: (tab: PageTab) => void;
+  initialModule?: 'tracking' | 'energy' | 'builder' | 'explorer';
 }
 
-export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({ onSelectTab }) => {
-  const [activeModule, setActiveModule] = useState<'tracking' | 'energy' | 'builder' | 'explorer'>('tracking');
+export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({ 
+  onSelectTab, 
+  initialModule = 'tracking' 
+}) => {
+  const [activeModule, setActiveModule] = useState<'tracking' | 'energy' | 'builder' | 'explorer'>(initialModule);
   const [showTeacherGuide, setShowTeacherGuide] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
@@ -297,7 +302,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({ onSelect
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <h1 className="text-base sm:text-lg font-bold font-display tracking-tight text-neutral-900">
-                SUNSTRIDE LAB
+                SUNSTRIDE INTERACTIVE LAB
               </h1>
             </div>
             <div className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-neutral-100 border border-neutral-300 text-[10px] font-mono font-semibold text-neutral-700">
@@ -313,7 +318,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({ onSelect
           <div className="flex items-center gap-1 font-mono text-xs">
             {[
               { id: 'tracking', label: '01 / BUS TRACKING', icon: Bus },
-              { id: 'energy', label: '02 / ENERGY LAB', icon: Sun },
+              { id: 'energy', label: '02 / ENERGY & HARVESTING', icon: Sun },
               { id: 'builder', label: '03 / CIRCUIT', icon: Link2 },
               { id: 'explorer', label: '04 / CAD EXPLORER', icon: Cpu },
             ].map((mod) => {
@@ -667,46 +672,56 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({ onSelect
         )}
 
         {/* ======================================================================= */}
-        {/* MODULE 02: ENERGY LAB & HARVESTING (COMPACT SCREEN-FIT) */}
+        {/* MODULE 02: ENERGY LAB & ADVANCED HARVESTING SHOWCASE */}
         {/* ======================================================================= */}
         {activeModule === 'energy' && (
-          <div className="space-y-3">
-            {/* Quick Environmental Presets Bar */}
-            <div className="p-2 bg-white rounded-xl border border-[#E2E4E8] shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-              <span className="font-bold text-neutral-700 flex items-center gap-1 pl-1">
-                <Sliders className="w-3.5 h-3.5 text-amber-600" />
-                <span>WEATHER PRESETS:</span>
-              </span>
-              <div className="flex flex-wrap items-center gap-1.5">
-                <button
-                  onClick={() => setEnergyPreset('dashboard')}
-                  className="px-2.5 py-1 rounded bg-amber-500 text-neutral-950 font-bold hover:bg-amber-400 transition-colors cursor-pointer"
-                >
-                  Dashboard (12.4W Solar / 3.8W Piezo)
-                </button>
-                <button
-                  onClick={() => setEnergyPreset('noon')}
-                  className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
-                >
-                  Peak Noon Sun
-                </button>
-                <button
-                  onClick={() => setEnergyPreset('rain')}
-                  className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
-                >
-                  Monsoon Rush (Low Sun + High Steps)
-                </button>
-                <button
-                  onClick={() => setEnergyPreset('night')}
-                  className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
-                >
-                  Night (100% Piezo Only)
-                </button>
-              </div>
-            </div>
+          <div className="space-y-6">
+            {/* 1. PRIMARY EXPERIENCE: SUNSTRIDE ENERGY LAB */}
+            <EnergyLab />
 
-            {/* Controls and Yield Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+            {/* 2. SUPPLEMENTARY DUAL-HARVESTING AMBIENT YIELD CALCULATOR */}
+            <div className="bg-white rounded-2xl border border-[#E2E4E8] p-4 sm:p-5 shadow-xs space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-3">
+                <div>
+                  <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider block">
+                    SUPPLEMENTARY LAB CALCULATOR
+                  </span>
+                  <h3 className="text-base font-bold font-display text-neutral-900 flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-emerald-600" />
+                    <span>Station Ambient Dual-Harvesting Calculator</span>
+                  </h3>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+                  <span className="text-neutral-500 text-[10px] mr-1 hidden sm:inline">WEATHER PRESETS:</span>
+                  <button
+                    onClick={() => setEnergyPreset('dashboard')}
+                    className="px-2.5 py-1 rounded bg-amber-500 text-neutral-950 font-bold hover:bg-amber-400 transition-colors cursor-pointer"
+                  >
+                    Dashboard (12.4W Solar / 3.8W Piezo)
+                  </button>
+                  <button
+                    onClick={() => setEnergyPreset('noon')}
+                    className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+                  >
+                    Peak Noon Sun
+                  </button>
+                  <button
+                    onClick={() => setEnergyPreset('rain')}
+                    className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+                  >
+                    Monsoon Rush (Low Sun + High Steps)
+                  </button>
+                  <button
+                    onClick={() => setEnergyPreset('night')}
+                    className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+                  >
+                    Night (100% Piezo Only)
+                  </button>
+                </div>
+              </div>
+
+              {/* Controls and Yield Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
               {/* Left 6 Cols: Interactive Sliders */}
               <div className="lg:col-span-6 bg-white p-4 rounded-xl border border-[#E2E4E8] shadow-xs space-y-4">
                 <h3 className="text-sm font-bold font-display text-neutral-900 flex items-center gap-1.5">
@@ -823,6 +838,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({ onSelect
               </div>
             </div>
           </div>
+        </div>
         )}
 
         {/* ======================================================================= */}

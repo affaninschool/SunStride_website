@@ -14,7 +14,8 @@ import {
   Zap, 
   Info,
   CheckCircle2,
-  Workflow
+  Workflow,
+  Sparkles
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -336,6 +337,29 @@ export const SystemView: React.FC<SystemViewProps> = ({ onSelectTab }) => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* INTERACTIVE LAB SHOWCASE INVITATION BANNER */}
+          <div className="mt-8 p-5 sm:p-6 bg-[#14171C] text-white rounded-2xl border border-neutral-800 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/30">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>EXPANSION · INTERACTIVE LAB</span>
+              </div>
+              <h3 className="text-base sm:text-xl font-bold font-display text-white">
+                “Every Movement Has Potential” — Explore Proposed Innovations
+              </h3>
+              <p className="text-xs text-neutral-400 font-sans max-w-2xl leading-relaxed">
+                Test the side-by-side SunTrack solar tracker comparison, StepVolt footstep mechanics, RoadVolt speed-breaker kinetic recovery, and BrakeBack regenerative deceleration.
+              </p>
+            </div>
+            <button
+              onClick={() => onSelectTab('lab')}
+              className="px-4 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-neutral-950 font-mono text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shrink-0 shadow-xs group"
+            >
+              <span>OPEN INTERACTIVE LAB</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
         </div>
       </section>
