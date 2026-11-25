@@ -47,6 +47,27 @@ export interface ResearchArea {
   keyQuestions: string[];
 }
 
+export interface ResearchProblem {
+  id: string;
+  number: string;
+  code: string;
+  title: string;
+  category: 'telematics' | 'energy' | 'connectivity' | 'identification';
+  categoryLabel: string;
+  coreProblem: string;
+  solution: string;
+  note?: string;
+  technicalMechanism: string;
+  hardwareStack: string[];
+  statusQuoDeficit: string;
+  sunstrideAdvantage: string;
+  impactMetrics?: {
+    scope: string;
+    feasibility: string;
+    stage: string;
+  };
+}
+
 export interface MethodologyStage {
   id: string;
   number: string;

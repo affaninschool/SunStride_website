@@ -1,4 +1,4 @@
-import { BusData, ResearchArea, MethodologyStage, SystemComponent, TeamMember } from '../types';
+import { BusData, ResearchArea, MethodologyStage, SystemComponent, TeamMember, ResearchProblem } from '../types';
 
 export const INITIAL_BUSES: BusData[] = [
   {
@@ -337,3 +337,239 @@ export const TEAM_MEMBERS: TeamMember[] = [
     portfolioUrl: 'https://mrinmoychowhan.lovable.app/',
   },
 ];
+
+export const RESEARCH_PROBLEMS: ResearchProblem[] = [
+  {
+    id: 'problem-1',
+    number: '01',
+    code: 'PRB-INFO-01',
+    title: 'Lack of real-time bus information',
+    category: 'telematics',
+    categoryLabel: 'Commuter Telematics',
+    coreProblem: 'Passengers at many bus stops cannot easily check whether a bus has arrived or is approaching, causing uncertainty and waiting.',
+    solution: 'RFID-based bus identification and a local website that updates bus status when a registered bus is detected.',
+    technicalMechanism: 'Automated 13.56 MHz RFID interrogation trigger updates the embedded ESP8266 local SQLite / volatile bus arrival registry within < 100 ms.',
+    hardwareStack: ['RC522 RFID Interrogator', 'Passive Vehicle Transponders', 'ESP8266 Microcontroller', 'Local HTTP Web Server'],
+    statusQuoDeficit: 'Blind waiting without ETA visibility, leading to missed transfers, safety concerns during evening hours, and commuter frustration.',
+    sunstrideAdvantage: 'Real-time arrival notification flashed instantly on the local shelter dashboard without requiring external telecommunications towers.',
+    impactMetrics: {
+      scope: 'Commuter Experience',
+      feasibility: 'High (Fully Prototyped)',
+      stage: 'Operational in Lab'
+    }
+  },
+  {
+    id: 'problem-2',
+    number: '02',
+    code: 'PRB-PWR-02',
+    title: 'Dependence on conventional electricity',
+    category: 'energy',
+    categoryLabel: 'Power Autonomy',
+    coreProblem: 'Electronic facilities at bus stations require power, which may be costly or difficult to access in some locations.',
+    solution: 'Explore solar and piezoelectric energy harvesting to supplement the energy needs of station electronics.',
+    technicalMechanism: 'Dual-path micro-generation combining rooftop photovoltaic yield with flooring kinetic compression transducers feeding a regulated lithium storage buffer.',
+    hardwareStack: ['Monocrystalline Solar Canopy', 'Piezoelectric Ceramic Discs', 'Full-Wave Bridge Rectifier', 'TP4056 Battery Management Unit'],
+    statusQuoDeficit: 'Standard transit stops require expensive grid trenching ($1,500–$5,000/stop) or remain completely non-electrified dark shelters.',
+    sunstrideAdvantage: 'Decentralized off-grid micro-harvesting powers sensor logic, local micro-AP, and OLED arrival indicators autonomously.',
+    impactMetrics: {
+      scope: 'Energy Decarbonization',
+      feasibility: 'High (Solar) / Research (Piezo)',
+      stage: 'Hybrid Benchtop Setup'
+    }
+  },
+  {
+    id: 'problem-3',
+    number: '03',
+    code: 'PRB-NET-03',
+    title: 'Limited digital infrastructure in rural areas',
+    category: 'connectivity',
+    categoryLabel: 'Edge Infrastructure',
+    coreProblem: 'Rural and remote bus stops may lack advanced passenger-information systems or reliable internet connectivity.',
+    solution: 'A local Wi-Fi hotspot and locally hosted dashboard can provide information without requiring continuous internet access, within the station\'s Wi-Fi range.',
+    technicalMechanism: 'ESP8266 configured in SoftAP (Access Point) mode broadcasts an open local SSID ("SunStride-Station") with an embedded zero-bandwidth Web Server.',
+    hardwareStack: ['ESP8266 SoftAP Engine', 'Internal SPIFFS / LittleFS Flash', 'Captive Portal DNS Responder', 'Low-power 2.4 GHz RF Antenna'],
+    statusQuoDeficit: 'Cloud-dependent smart transit systems collapse completely in cellular dead zones or during regional network outages.',
+    sunstrideAdvantage: '100% autonomous edge functionality: any passenger smartphone within 30-50m radius connects and views live arrivals with zero cellular data.',
+    impactMetrics: {
+      scope: 'Civic Inclusivity',
+      feasibility: 'High (Implemented)',
+      stage: 'Field Verified'
+    }
+  },
+  {
+    id: 'problem-4',
+    number: '04',
+    code: 'PRB-IDENT-04',
+    title: 'Difficulty identifying the correct bus',
+    category: 'identification',
+    categoryLabel: 'Fleet Identification',
+    coreProblem: 'At busy or unfamiliar bus stops, passengers may struggle to identify a particular bus, especially when multiple services arrive around the same time.',
+    solution: 'Registered RFID tags can help identify participating buses and associate them with their corresponding information.',
+    note: 'The current prototype identifies tagged buses; it does not independently determine their routes or destinations.',
+    technicalMechanism: 'Unique 4-byte / 7-byte UID hardware serialization mapped against local lookup dictionary displaying bus name, registered service, and arrival timestamp.',
+    hardwareStack: ['Mifare Classic 1K RFID Tags', 'Fixed Canopy RFID Reader', 'Hardware Interrupt Signal Pin', 'Local Identifier Registry'],
+    statusQuoDeficit: 'Visual confusion during peak hours, crowding around bus doors, and passengers boarding the wrong vehicle on overlapping route corridors.',
+    sunstrideAdvantage: 'Deterministic machine verification: unambiguous identification of each arriving vehicle instantly confirmed on station display and phone screen.',
+    impactMetrics: {
+      scope: 'Fleet Clarity',
+      feasibility: 'High (Prototype Validated)',
+      stage: 'Active Identification'
+    }
+  },
+  {
+    id: 'problem-5',
+    number: '05',
+    code: 'PRB-COMM-05',
+    title: 'Inconvenient access to transport information',
+    category: 'telematics',
+    categoryLabel: 'Commuter Ergonomics',
+    coreProblem: 'Passengers may have to ask other people or depend on manual announcements to obtain bus-related information.',
+    solution: 'A simple local dashboard can make available bus-status information accessible through a phone connected to the station\'s network.',
+    technicalMechanism: 'Responsive HTTP HTML/CSS/JS payload served directly from microcontroller flash memory to any connected browser without requiring app installation.',
+    hardwareStack: ['AsyncWebServer Micro-Stack', 'Lightweight Browser Engine', 'Dynamic AJAX Polling Endpoint', 'OLED Station Auxiliary Display'],
+    statusQuoDeficit: 'Dependence on word-of-mouth hearsay, damaged paper timetables, or garbled speaker announcements that exclude hearing-impaired commuters.',
+    sunstrideAdvantage: 'Direct, personal, silent, accessible digital readout accessible on passenger handheld devices with zero app install friction.',
+    impactMetrics: {
+      scope: 'Accessibility',
+      feasibility: 'High (Operational)',
+      stage: 'Active Web Dashboard'
+    }
+  },
+  {
+    id: 'problem-6',
+    number: '06',
+    code: 'PRB-RENEW-06',
+    title: 'Underexplored opportunities for local renewable energy',
+    category: 'energy',
+    categoryLabel: 'Urban Energy Surfaces',
+    coreProblem: 'Bus shelters and public transport infrastructure offer potential surfaces and locations for small-scale renewable energy systems.',
+    solution: 'Investigate solar panels and piezoelectric harvesting as possible supplementary energy sources for low-power station electronics.',
+    note: 'Piezoelectric generation would need practical testing to establish whether its output is useful for the intended application.',
+    technicalMechanism: 'Dual-surface kinetic-photovoltaic exploration assessing ambient horizontal solar irradiance and footfall impulse voltage generation potential.',
+    hardwareStack: ['Solar Tracking Bracket (SunTrack)', 'Piezo Floor Mat Harness (StepVolt)', 'Schottky Energy Harvesting IC', 'Ultracapacitor Bank'],
+    statusQuoDeficit: 'Thousands of municipal bus shelters remain passive metal sheds with zero micro-power contribution to local infrastructure.',
+    sunstrideAdvantage: 'Transforms passive civic canopies and pedestrian walkways into active micro-power generators supporting low-power IoT circuits.',
+    impactMetrics: {
+      scope: 'Sustainability Frontier',
+      feasibility: 'Moderate (Solar High / Piezo Experimental)',
+      stage: 'Lab Investigation'
+    }
+  }
+];
+
+export const PROJECT_CONTACT = {
+  email: 'pedomatrix@gmail.com',
+  school: 'PM Shri Jawahar Navodaya Vidyalaya',
+  lab: 'Atal Tinkering Lab (ATL)',
+  creator: 'Affan Adil (Class VIII)',
+  mentor: 'Mrinmoy Chowhan (ATL Mentor)',
+  location: 'Atal Tinkering Lab · PM Shri JNV, India',
+};
+
+export interface BomItem {
+  id: string;
+  part: string;
+  spec: string;
+  qty: number;
+  unitCostInr: number;
+  subsystem: 'Telemetry' | 'Controller' | 'Energy' | 'Feedback & UI';
+  status: 'Working Prototype' | 'Experimental Add-On';
+}
+
+export const HARDWARE_BOM: BomItem[] = [
+  {
+    id: 'bom-1',
+    part: 'NodeMCU ESP8266 (ESP-12E)',
+    spec: '3.3V Wi-Fi SoftAP + SPI/I2C MCU',
+    qty: 1,
+    unitCostInr: 320,
+    subsystem: 'Controller',
+    status: 'Working Prototype',
+  },
+  {
+    id: 'bom-2',
+    part: 'MFRC522 RFID Reader Module',
+    spec: '13.56 MHz SPI + Passive Keychain/Card Tags',
+    qty: 1,
+    unitCostInr: 180,
+    subsystem: 'Telemetry',
+    status: 'Working Prototype',
+  },
+  {
+    id: 'bom-3',
+    part: 'Passive Mifare 1K RFID Cards',
+    spec: '13.56 MHz Bus Fleet Identifiers (4-byte UID)',
+    qty: 5,
+    unitCostInr: 25,
+    subsystem: 'Telemetry',
+    status: 'Working Prototype',
+  },
+  {
+    id: 'bom-4',
+    part: 'Mini Monocrystalline Solar Panel',
+    spec: '6V / 5W Canopy Test PV Module',
+    qty: 1,
+    unitCostInr: 480,
+    subsystem: 'Energy',
+    status: 'Working Prototype',
+  },
+  {
+    id: 'bom-5',
+    part: 'Piezo Ceramic Discs (35mm PZT)',
+    spec: 'Sub-floor kinetic pulse array + 1N5819 Schottky bridge',
+    qty: 8,
+    unitCostInr: 30,
+    subsystem: 'Energy',
+    status: 'Experimental Add-On',
+  },
+  {
+    id: 'bom-6',
+    part: 'TP4056 + 18650 Li-ion / LiFePO4 Cell',
+    spec: 'Charge protection + 5V/3.3V AMS1117 regulator',
+    qty: 1,
+    unitCostInr: 380,
+    subsystem: 'Energy',
+    status: 'Working Prototype',
+  },
+  {
+    id: 'bom-7',
+    part: '0.96" OLED I2C + Status LEDs + Buzzer',
+    spec: 'Local station display + Green/Red LED + 5V active buzzer',
+    qty: 1,
+    unitCostInr: 260,
+    subsystem: 'Feedback & UI',
+    status: 'Working Prototype',
+  },
+  {
+    id: 'bom-8',
+    part: 'Breadboard, Jumper Harness & Shelter Frame',
+    spec: 'Acrylic/foamboard bus canopy + wiring kit',
+    qty: 1,
+    unitCostInr: 650,
+    subsystem: 'Feedback & UI',
+    status: 'Working Prototype',
+  },
+];
+
+export interface WiringPinRow {
+  module: string;
+  modulePin: string;
+  espPin: string;
+  gpio: string;
+  signalRole: string;
+}
+
+export const WIRING_PINOUT: WiringPinRow[] = [
+  { module: 'MFRC522 RFID', modulePin: '3.3V', espPin: '3V3', gpio: 'Power', signalRole: '3.3V Regulated Supply (Never 5V)' },
+  { module: 'MFRC522 RFID', modulePin: 'RST', espPin: 'D3', gpio: 'GPIO0', signalRole: 'Hardware Reset Trigger' },
+  { module: 'MFRC522 RFID', modulePin: 'GND', espPin: 'GND', gpio: 'Ground', signalRole: 'Common Reference Ground' },
+  { module: 'MFRC522 RFID', modulePin: 'MISO', espPin: 'D6', gpio: 'GPIO12', signalRole: 'SPI Master In Slave Out' },
+  { module: 'MFRC522 RFID', modulePin: 'MOSI', espPin: 'D7', gpio: 'GPIO13', signalRole: 'SPI Master Out Slave In' },
+  { module: 'MFRC522 RFID', modulePin: 'SCK', espPin: 'D5', gpio: 'GPIO14', signalRole: 'SPI Clock Bus' },
+  { module: 'MFRC522 RFID', modulePin: 'SDA (SS)', espPin: 'D8', gpio: 'GPIO15', signalRole: 'SPI Chip Select (CS)' },
+  { module: 'Active Buzzer', modulePin: '+ Signal', espPin: 'D1', gpio: 'GPIO5', signalRole: 'Chime / Denied Tone Pulse' },
+  { module: 'Status LEDs', modulePin: 'Green / Red', espPin: 'D2 / D4', gpio: 'GPIO4 / GPIO2', signalRole: 'Verified vs Unknown Tag Indicator' },
+  { module: 'OLED / Display', modulePin: 'SDA / SCL', espPin: 'D2 / D1 (I2C)', gpio: 'GPIO4 / GPIO5', signalRole: 'Optional I2C Local Shelter Readout' },
+  { module: 'Solar + Piezo Bank', modulePin: 'OUT+ / OUT-', espPin: 'VIN / GND', gpio: 'Power Rail', signalRole: 'Regulated 5V Buffer Feed via TP4056' },
+];
+

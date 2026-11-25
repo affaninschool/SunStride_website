@@ -123,11 +123,19 @@ export const ContactView: React.FC<ContactViewProps> = ({ onSelectTab }) => {
               </form>
             )}
 
-            <div className="pt-6 border-t border-[#F3F4F6] flex items-center justify-between text-xs font-mono text-[#6B7280]">
+            <div className="pt-6 border-t border-[#F3F4F6] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-[#6B7280]">
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-neutral-400" />
-                <span>ATL Engineering Research Facility · New Delhi, India</span>
+                <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Atal Tinkering Lab · PM Shri Jawahar Navodaya Vidyalaya</span>
               </div>
+              <a
+                id="contact-direct-mailto"
+                href="mailto:pedomatrix@gmail.com?subject=SunStride%20ATL%20Smart%20Station%20Inquiry"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1A1A1A] text-white font-bold hover:bg-neutral-800 transition-colors self-start sm:self-auto"
+              >
+                <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                <span>pedomatrix@gmail.com</span>
+              </a>
             </div>
           </div>
         </div>

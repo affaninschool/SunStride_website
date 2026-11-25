@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageTab } from '../types';
 import { 
   ArrowRight, 
@@ -16,11 +16,16 @@ import {
   ArrowDown,
   Sparkles,
   Play,
-  Compass
+  Compass,
+  Mail,
+  Building2,
+  ExternalLink,
+  GraduationCap
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { SunStrideLogo } from '../components/SunStrideLogo';
 import { ProjectTourModal } from '../components/ProjectTourModal';
+import { PROJECT_CONTACT } from '../data/projectData';
 
 interface HomeViewProps {
   onSelectTab: (tab: PageTab) => void;
@@ -30,7 +35,16 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
   const [selectedStationComponent, setSelectedStationComponent] = useState<string>('rfid');
   const [activeWorkFlowStep, setActiveWorkFlowStep] = useState<number>(1);
   const [heroPulseActive, setHeroPulseActive] = useState<boolean>(true);
+  const [isTabHidden, setIsTabHidden] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleVis = () => setIsTabHidden(document.hidden);
+    document.addEventListener('visibilitychange', handleVis);
+    return () => document.removeEventListener('visibilitychange', handleVis);
+  }, []);
+
+  const effectivePulse = heroPulseActive && !isTabHidden;
 
   const stationComponents = [
     {
@@ -89,11 +103,15 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
       <section className="relative w-full border-b border-[#E2E4E8] bg-tech-grid pt-12 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Scientific Status Tag with Official Logo */}
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-lg bg-[#E2E4E8]/90 border border-[#DCDFE4] text-[11px] font-mono font-semibold uppercase tracking-wider mb-6 text-[#374151] shadow-xs">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-lg bg-[#E2E4E8]/90 border border-[#DCDFE4] text-[11px] font-mono font-semibold uppercase tracking-wider mb-3 text-[#374151] shadow-xs">
             <SunStrideLogo size={22} />
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>ATL ENGINEERING RESEARCH · APPLIED TRANSIT & HARVESTING SYSTEM</span>
+            <span>SUNSTRIDE · ATL SMART STATION PROTOTYPE</span>
           </div>
+
+          <p className="font-mono text-xs sm:text-sm font-semibold text-emerald-800 bg-emerald-50/90 border border-emerald-200 rounded-lg px-3.5 py-2 mb-6 max-w-2xl">
+            Working ATL prototype: ESP8266 + RFID bus tracking + solar/piezo station power.
+          </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Col: Headlines & Content */}
@@ -179,7 +197,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
 
                   {/* Flow Arrow */}
                   <div className="flex items-center justify-center text-neutral-500">
-                    <ArrowDown className={`w-4 h-4 ${heroPulseActive ? 'animate-bounce text-emerald-400' : ''}`} />
+                    <ArrowDown className={`w-4 h-4 ${effectivePulse ? 'animate-bounce text-emerald-400' : ''}`} />
                   </div>
 
                   {/* Center Station Hub */}
@@ -200,7 +218,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
 
                   {/* Flow Arrow */}
                   <div className="flex items-center justify-center text-neutral-500">
-                    <ArrowDown className={`w-4 h-4 ${heroPulseActive ? 'animate-bounce text-emerald-400' : ''}`} />
+                    <ArrowDown className={`w-4 h-4 ${effectivePulse ? 'animate-bounce text-emerald-400' : ''}`} />
                   </div>
 
                   {/* Transportation & Passenger Row */}
@@ -561,7 +579,115 @@ export const HomeView: React.FC<HomeViewProps> = ({ onSelectTab }) => {
         </div>
       </section>
 
-      {/* 5. FINAL CALL TO ACTION */}
+      {/* 5. TEAM, MENTOR & ATL INSTITUTIONAL CREDITS */}
+      <section className="py-16 bg-white border-b border-[#E2E4E8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <span className="text-xs font-mono font-semibold uppercase tracking-widest text-emerald-700 block">
+                EXHIBITION CREDITS &amp; INSTITUTION
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-[#1A1A1A]">
+                TEAM, ATL MENTOR &amp; ACADEMIC CONTACT
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5">
+              <a
+                id="home-mailto-contact"
+                href={`mailto:${PROJECT_CONTACT.email}?subject=SunStride%20ATL%20Science%20Exhibition%20Inquiry`}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1A1A1A] hover:bg-neutral-800 text-white font-mono text-xs font-bold transition-colors shadow-xs"
+              >
+                <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{PROJECT_CONTACT.email}</span>
+              </a>
+              <button
+                onClick={() => onSelectTab('team')}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#F4F5F7] hover:bg-[#ECEEF2] border border-[#DCDFE4] text-[#1A1A1A] font-mono text-xs font-bold cursor-pointer transition-colors"
+              >
+                <span>Full Team Profile</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* School & ATL Card */}
+            <div className="p-6 rounded-xl bg-[#F8F9FB] border border-[#E2E4E8] space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-[#1A1A1A] text-white flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-amber-400" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase">
+                  INCUBATED AT
+                </span>
+                <h3 className="text-base font-bold font-display text-[#1A1A1A]">
+                  {PROJECT_CONTACT.school}
+                </h3>
+                <p className="text-xs font-mono text-[#6B7280] mt-1">
+                  {PROJECT_CONTACT.lab} · Atal Innovation Mission (NITI Aayog)
+                </p>
+              </div>
+            </div>
+
+            {/* Creator Card */}
+            <div className="p-6 rounded-xl bg-[#F8F9FB] border border-[#E2E4E8] space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold text-amber-700 uppercase">
+                    STUDENT INNOVATOR
+                  </span>
+                  <GraduationCap className="w-4 h-4 text-[#6B7280]" />
+                </div>
+                <h3 className="text-base font-bold font-display text-[#1A1A1A]">
+                  Affan Adil (Class VIII)
+                </h3>
+                <p className="text-xs text-[#4B5563] leading-relaxed">
+                  Sole project creator responsible for ESP8266 firmware, RFID tracking, CAD shelter concept, and solar/piezo bench testing.
+                </p>
+              </div>
+              <a
+                href="https://affanadil.lovable.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#1A1A1A] hover:text-emerald-700 underline pt-1"
+              >
+                <span>affanadil.lovable.app</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+
+            {/* Mentor Card */}
+            <div className="p-6 rounded-xl bg-[#F8F9FB] border border-[#E2E4E8] space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase">
+                    ATL PROJECT MENTOR
+                  </span>
+                  <Users className="w-4 h-4 text-[#6B7280]" />
+                </div>
+                <h3 className="text-base font-bold font-display text-[#1A1A1A]">
+                  Mrinmoy Chowhan
+                </h3>
+                <p className="text-xs text-[#4B5563] leading-relaxed">
+                  Atal Tinkering Lab mentor guiding experimental rigor, laboratory safety, hardware troubleshooting, and scientific validation.
+                </p>
+              </div>
+              <a
+                href="https://mrinmoychowhan.lovable.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#1A1A1A] hover:text-emerald-700 underline pt-1"
+              >
+                <span>mrinmoychowhan.lovable.app</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. FINAL CALL TO ACTION */}
       <section className="py-20 bg-[#F4F5F7]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#6B7280] block">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageTab, BusData } from '../types';
 import { INITIAL_BUSES, SYSTEM_COMPONENTS } from '../data/projectData';
 import { 
@@ -28,10 +28,22 @@ import {
   Volume2, 
   VolumeX, 
   Award,
-  Zap
+  Zap,
+  Copy,
+  Check,
+  Share2,
+  FileDown,
+  Calculator
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { EnergyLab } from '../components/EnergyLab';
+import { BenchtopDemoProof } from '../components/BenchtopDemoProof';
+import {
+  CircuitSchematicAndThumbnails,
+  CadBlueprintAndThumbnails,
+  BomAndWiringReference,
+} from '../components/CircuitAndCadVisuals';
+import { downloadOnePageSpecPdf } from '../utils/specPdfGenerator';
 
 interface InteractiveLabViewProps {
   onSelectTab: (tab: PageTab) => void;
@@ -45,6 +57,13 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
   const [activeModule, setActiveModule] = useState<'tracking' | 'energy' | 'builder' | 'explorer'>(initialModule);
   const [showTeacherGuide, setShowTeacherGuide] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [isTabHidden, setIsTabHidden] = useState<boolean>(false);
+
+  useEffect(() => {
+    const onVis = () => setIsTabHidden(document.hidden);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
 
   // --- MODULE 01: BUS TRACKING SIMULATOR STATE ---
   const [buses, setBuses] = useState<BusData[]>(INITIAL_BUSES);
@@ -209,9 +228,20 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
     }
   };
 
-  // --- MODULE 02: ENERGY LAB STATE ---
-  const [solarIrradiance, setSolarIrradiance] = useState<number>(68); // ~12.4W
-  const [footTraffic, setFootTraffic] = useState<number>(45); // ~3.8W
+  // --- MODULE 02: ENERGY LAB STATE (initialized from URL params if present) ---
+  const readClampedParam = (key: string, fallback: number): number => {
+    if (typeof window === 'undefined') return fallback;
+    const raw = new URLSearchParams(window.location.search).get(key);
+    if (raw === null) return fallback;
+    const parsed = Number(raw);
+    if (Number.isNaN(parsed)) return fallback;
+    return Math.min(100, Math.max(0, Math.round(parsed)));
+  };
+
+  const [solarIrradiance, setSolarIrradiance] = useState<number>(() => readClampedParam('solar', 47)); // 47% -> 8.6W
+  const [footTraffic, setFootTraffic] = useState<number>(() => readClampedParam('steps', 45)); // 45% -> 3.8W
+  const [copiedResult, setCopiedResult] = useState<boolean>(false);
+  const [copiedShareUrl, setCopiedShareUrl] = useState<boolean>(false);
 
   const solarOutputWatts = Number(((solarIrradiance / 100) * 18.2).toFixed(1));
   const piezoOutputWatts = Number(((footTraffic / 100) * 8.4).toFixed(1));
@@ -219,11 +249,48 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
   const stationBaseLoadWatts = 4.2;
   const netEnergyBalanceWatts = Number((totalHarvestedWatts - stationBaseLoadWatts).toFixed(1));
   const solarMixPct = totalHarvestedWatts > 0 ? Math.round((solarOutputWatts / totalHarvestedWatts) * 100) : 0;
-  const piezoMixPct = 100 - solarMixPct;
+  const piezoMixPct = totalHarvestedWatts > 0 ? 100 - solarMixPct : 0;
+
+  // Keep shareable experiment URL synced when in energy module
+  useEffect(() => {
+    if (typeof window === 'undefined' || activeModule !== 'energy') return;
+    const params = new URLSearchParams(window.location.search);
+    params.set('module', 'energy');
+    params.set('solar', String(solarIrradiance));
+    params.set('steps', String(footTraffic));
+    const nextUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, '', nextUrl);
+  }, [activeModule, solarIrradiance, footTraffic]);
+
+  const getShareableUrl = () => {
+    if (typeof window === 'undefined') return `?module=energy&solar=${solarIrradiance}&steps=${footTraffic}`;
+    return `${window.location.origin}${window.location.pathname}?module=energy&solar=${solarIrradiance}&steps=${footTraffic}`;
+  };
+
+  const handleCopyLabResult = () => {
+    const netText = netEnergyBalanceWatts >= 0 ? `+${netEnergyBalanceWatts} W surplus` : `${netEnergyBalanceWatts} W deficit`;
+    const report = [
+      'SunStride ATL Smart Station — Energy Lab Experiment Observation',
+      `Inputs: Solar Irradiance = ${solarIrradiance}%, Pedestrian Steps = ${footTraffic}%`,
+      `Math: Solar (${solarIrradiance}% x 18.2Wp = ${solarOutputWatts}W) + Piezo (${footTraffic}% x 8.4W_eq = ${piezoOutputWatts}W) = ${totalHarvestedWatts}W Total`,
+      `Station Base Load: ${stationBaseLoadWatts}W (ESP8266 + MFRC522 + Display)`,
+      `Net Balance: ${netText} | Mix: ${solarMixPct}% Solar / ${piezoMixPct}% Piezo`,
+      `Shareable URL: ${getShareableUrl()}`,
+    ].join('\n');
+    navigator.clipboard.writeText(report);
+    setCopiedResult(true);
+    setTimeout(() => setCopiedResult(false), 2000);
+  };
+
+  const handleCopyShareUrl = () => {
+    navigator.clipboard.writeText(getShareableUrl());
+    setCopiedShareUrl(true);
+    setTimeout(() => setCopiedShareUrl(false), 2000);
+  };
 
   const setEnergyPreset = (name: 'dashboard' | 'noon' | 'rain' | 'night') => {
     if (name === 'dashboard') {
-      setSolarIrradiance(68);
+      setSolarIrradiance(47);
       setFootTraffic(45);
     } else if (name === 'noon') {
       setSolarIrradiance(98);
@@ -344,6 +411,16 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
 
           {/* Right: Quick Actions */}
           <div className="flex items-center gap-2">
+            <button
+              id="btn-lab-spec-pdf"
+              onClick={downloadOnePageSpecPdf}
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-300 font-mono text-[11px] font-bold shadow-xs cursor-pointer"
+              title="Download 1-Page Technical Specification PDF"
+            >
+              <FileDown className="w-3.5 h-3.5 text-emerald-700" />
+              <span>SPEC PDF</span>
+            </button>
+
             <button
               id="btn-teacher-speech-guide"
               onClick={() => setShowTeacherGuide(true)}
@@ -481,7 +558,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                     <div className={`w-28 h-28 rounded-full border border-dashed ${
                       simState === 'rejected'
                         ? 'border-rose-400/70'
-                        : simState === 'detecting'
+                        : simState === 'detecting' && !isTabHidden
                         ? 'border-amber-400/80 animate-spin'
                         : 'border-emerald-400/30'
                     }`} />
@@ -523,7 +600,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                     </div>
 
                     {/* Transponder RF wave pulse */}
-                    {(simState === 'detecting' || simState === 'processing') && (
+                    {(simState === 'detecting' || simState === 'processing') && !isTabHidden && (
                       <div className={`w-6 h-6 rounded-full border-2 animate-ping ${
                         isUnknownTagTest ? 'border-rose-400' : 'border-amber-400'
                       }`} />
@@ -537,7 +614,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                         ? 'bg-emerald-950 border-emerald-400 text-emerald-300 ring-2 ring-emerald-500/40'
                         : simState === 'rejected'
                         ? 'bg-rose-950 border-rose-400 text-rose-300 ring-2 ring-rose-500/40'
-                        : simState === 'detecting' || simState === 'processing'
+                        : (simState === 'detecting' || simState === 'processing') && !isTabHidden
                         ? 'bg-amber-950 border-amber-400 text-amber-300 animate-pulse'
                         : 'bg-neutral-900 border-neutral-700 text-neutral-400'
                     }`}>
@@ -664,10 +741,13 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                 <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                 <span>EXHIBITION QUICK CUE:</span>
                 <span className="font-normal text-neutral-700">
-                  "Passive RFID transponders cost under ₹20, require zero batteries, and detect bus arrivals in 2ms without cellular data fees!"
+                  "Passive RFID transponders cost under ₹25, require zero batteries, and detect bus arrivals in &lt;100ms without cellular data fees!"
                 </span>
               </div>
             </div>
+
+            {/* 30-SEC BENCHTOP PROTOTYPE DEMO REEL */}
+            <BenchtopDemoProof />
           </div>
         )}
 
@@ -695,89 +775,186 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                   <span className="text-neutral-500 text-[10px] mr-1 hidden sm:inline">WEATHER PRESETS:</span>
                   <button
                     onClick={() => setEnergyPreset('dashboard')}
-                    className="px-2.5 py-1 rounded bg-amber-500 text-neutral-950 font-bold hover:bg-amber-400 transition-colors cursor-pointer"
+                    className={`px-2.5 py-1 rounded font-bold transition-colors cursor-pointer ${
+                      solarIrradiance === 47 && footTraffic === 45
+                        ? 'bg-amber-500 text-neutral-950'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
                   >
-                    Dashboard (12.4W Solar / 3.8W Piezo)
+                    Dashboard (8.6W Solar / 3.8W Piezo)
                   </button>
                   <button
                     onClick={() => setEnergyPreset('noon')}
-                    className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+                    className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                      solarIrradiance === 98 && footTraffic === 20
+                        ? 'bg-amber-500 text-neutral-950 font-bold'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
                   >
                     Peak Noon Sun
                   </button>
                   <button
                     onClick={() => setEnergyPreset('rain')}
-                    className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+                    className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                      solarIrradiance === 18 && footTraffic === 85
+                        ? 'bg-amber-500 text-neutral-950 font-bold'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
                   >
                     Monsoon Rush (Low Sun + High Steps)
                   </button>
                   <button
                     onClick={() => setEnergyPreset('night')}
-                    className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+                    className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                      solarIrradiance === 0 && footTraffic === 55
+                        ? 'bg-amber-500 text-neutral-950 font-bold'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
                   >
-                    Night (100% Piezo Only)
+                    Night (Piezo Only)
                   </button>
                 </div>
               </div>
 
               {/* Controls and Yield Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-              {/* Left 6 Cols: Interactive Sliders */}
+              {/* Left 6 Cols: Keyboard-Accessible Interactive Sliders + Math Breakdown */}
               <div className="lg:col-span-6 bg-white p-4 rounded-xl border border-[#E2E4E8] shadow-xs space-y-4">
-                <h3 className="text-sm font-bold font-display text-neutral-900 flex items-center gap-1.5">
-                  <Sliders className="w-4 h-4 text-emerald-600" />
-                  <span>Environmental Input Sliders</span>
-                </h3>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-bold font-display text-neutral-900 flex items-center gap-1.5">
+                    <Sliders className="w-4 h-4 text-emerald-600" />
+                    <span>Environmental Input Sliders</span>
+                  </h3>
+                  <span className="text-[10px] font-mono text-neutral-500">
+                    ?solar={solarIrradiance}&amp;steps={footTraffic}
+                  </span>
+                </div>
 
-                {/* Solar Slider */}
-                <div className="space-y-1">
+                {/* Solar Slider (Keyboard Accessible) */}
+                <div className="space-y-1.5">
                   <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="font-bold flex items-center gap-1 text-neutral-800">
+                    <label htmlFor="calc-solar-slider" className="font-bold flex items-center gap-1 text-neutral-800">
                       <Sun className="w-3.5 h-3.5 text-amber-500" />
-                      SOLAR IRRADIANCE
-                    </span>
-                    <span className="text-amber-600 font-bold">{solarIrradiance}%</span>
+                      <span>SOLAR IRRADIANCE</span>
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setSolarIrradiance((v) => Math.max(0, v - 1))}
+                        aria-label="Decrease solar irradiance by 1 percent"
+                        className="w-6 h-6 rounded bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 font-bold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                      >
+                        -
+                      </button>
+                      <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-700 font-bold tabular-nums min-w-[46px] text-center">
+                        {solarIrradiance}%
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSolarIrradiance((v) => Math.min(100, v + 1))}
+                        aria-label="Increase solar irradiance by 1 percent"
+                        className="w-6 h-6 rounded bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 font-bold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <input
+                    id="calc-solar-slider"
                     type="range"
                     min="0"
                     max="100"
+                    step="1"
                     value={solarIrradiance}
+                    aria-label="Solar irradiance percentage"
+                    aria-valuetext={`${solarIrradiance} percent, producing ${solarOutputWatts} Watts`}
                     onChange={(e) => setSolarIrradiance(Number(e.target.value))}
-                    className="w-full h-1.5 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-amber-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                   />
+                  <div className="flex justify-between text-[10px] font-mono text-neutral-400">
+                    <span>0% (Night)</span>
+                    <span>50%</span>
+                    <span>100% (18.2 Wp)</span>
+                  </div>
                 </div>
 
-                {/* Foot Traffic Slider */}
-                <div className="space-y-1 pt-2 border-t border-neutral-100">
+                {/* Foot Traffic Slider (Keyboard Accessible) */}
+                <div className="space-y-1.5 pt-2 border-t border-neutral-100">
                   <div className="flex items-center justify-between font-mono text-xs">
-                    <span className="font-bold flex items-center gap-1 text-neutral-800">
+                    <label htmlFor="calc-steps-slider" className="font-bold flex items-center gap-1 text-neutral-800">
                       <Footprints className="w-3.5 h-3.5 text-emerald-600" />
-                      PEDESTRIAN STEPS (PIEZO)
-                    </span>
-                    <span className="text-emerald-700 font-bold">{footTraffic}%</span>
+                      <span>PEDESTRIAN STEPS (PIEZO)</span>
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setFootTraffic((v) => Math.max(0, v - 1))}
+                        aria-label="Decrease pedestrian steps by 1 percent"
+                        className="w-6 h-6 rounded bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 font-bold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+                      >
+                        -
+                      </button>
+                      <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold tabular-nums min-w-[46px] text-center">
+                        {footTraffic}%
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFootTraffic((v) => Math.min(100, v + 1))}
+                        aria-label="Increase pedestrian steps by 1 percent"
+                        className="w-6 h-6 rounded bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 font-bold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <input
+                    id="calc-steps-slider"
                     type="range"
                     min="0"
                     max="100"
+                    step="1"
                     value={footTraffic}
+                    aria-label="Pedestrian step intensity percentage"
+                    aria-valuetext={`${footTraffic} percent, modeling ${piezoOutputWatts} Watts scaled array upper-bound`}
                     onChange={(e) => setFootTraffic(Number(e.target.value))}
-                    className="w-full h-1.5 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
                   />
+                  <div className="flex justify-between text-[10px] font-mono text-neutral-400">
+                    <span>0% (Empty)</span>
+                    <span>50%</span>
+                    <span>100% (8.4 W_eq max)</span>
+                  </div>
                 </div>
 
-                <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200 text-xs font-mono text-neutral-600 space-y-1">
-                  <span className="font-bold text-neutral-900 block text-[10px]">WHY DUAL-HARVESTING WINS:</span>
-                  <p className="text-[11px] leading-relaxed">
-                    When sunlight is zero (night or heavy rain), commuter footfall peaks during commute rush hours, generating kinetic micro-joules to maintain battery charge.
-                  </p>
+                {/* Transparent Math Breakdown */}
+                <div className="p-3 bg-[#F8F9FA] rounded-lg border border-[#E2E4E8] text-xs font-mono text-neutral-700 space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-bold text-neutral-900 text-[10px] uppercase">
+                    <Calculator className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>HOW THE MATH WORKS (LIVE FORMULA):</span>
+                  </div>
+                  <div className="text-[11px] space-y-0.5 leading-relaxed">
+                    <div>
+                      • Solar: <span className="font-bold text-amber-700">({solarIrradiance}% / 100) × 18.2 Wp = {solarOutputWatts} W</span>
+                    </div>
+                    <div>
+                      • Piezo Array Model: <span className="font-bold text-emerald-700">({footTraffic}% / 100) × 8.4 W = {piezoOutputWatts} W</span>
+                    </div>
+                    <div className="pt-1 border-t border-neutral-200 font-bold text-neutral-900">
+                      • Total: {solarOutputWatts} W + {piezoOutputWatts} W = {totalHarvestedWatts} W
+                    </div>
+                    <div>
+                      • Net Surplus: {totalHarvestedWatts} W − {stationBaseLoadWatts} W (ESP8266+RFID+UI) ={' '}
+                      <span className={netEnergyBalanceWatts >= 0 ? 'font-bold text-emerald-700' : 'font-bold text-rose-700'}>
+                        {netEnergyBalanceWatts >= 0 ? `+${netEnergyBalanceWatts} W` : `${netEnergyBalanceWatts} W`}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Right 6 Cols: Power Telemetry Readout */}
+              {/* Right 6 Cols: Power Telemetry Readout + Copy Result + Share Experiment */}
               <div className="lg:col-span-6 bg-[#14171C] text-white p-4 rounded-xl border border-neutral-800 space-y-3.5 shadow-md">
-                <div className="flex items-center justify-between border-b border-neutral-800 pb-2 text-xs font-mono text-neutral-400">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-2 text-xs font-mono text-neutral-400">
                   <span className="text-emerald-400 font-bold">POWER MANAGEMENT TELEMETRY</span>
                   <span>BUFFER: 12.8V LiFePO4 (5.1V LOGIC)</span>
                 </div>
@@ -786,11 +963,11 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="p-2.5 bg-neutral-900 rounded-lg border border-neutral-800 font-mono">
                     <span className="text-[9px] text-neutral-400 block uppercase">Solar Array</span>
-                    <span className="text-xl font-bold text-amber-400 font-display">{solarOutputWatts} W</span>
+                    <span className="text-xl font-bold text-amber-400 font-display tabular-nums">{solarOutputWatts} W</span>
                   </div>
                   <div className="p-2.5 bg-neutral-900 rounded-lg border border-neutral-800 font-mono">
-                    <span className="text-[9px] text-neutral-400 block uppercase">Piezo Kinetic</span>
-                    <span className="text-xl font-bold text-emerald-400 font-display">{piezoOutputWatts} W</span>
+                    <span className="text-[9px] text-neutral-400 block uppercase">Piezo Array (Modeled)</span>
+                    <span className="text-xl font-bold text-emerald-400 font-display tabular-nums">{piezoOutputWatts} W</span>
                   </div>
                 </div>
 
@@ -798,7 +975,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="text-neutral-400">SOURCE MIX:</span>
-                    <span className="text-white font-bold">{solarMixPct}% Solar • {piezoMixPct}% Piezo</span>
+                    <span className="text-white font-bold tabular-nums">{solarMixPct}% Solar • {piezoMixPct}% Piezo</span>
                   </div>
                   <div className="h-2.5 rounded-full overflow-hidden flex bg-neutral-900 border border-neutral-800">
                     <div style={{ width: `${solarMixPct}%` }} className="bg-amber-400 transition-all duration-300" />
@@ -810,11 +987,11 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                 <div className="p-3 bg-neutral-900 rounded-lg border border-emerald-500/40 font-mono text-xs flex items-center justify-between">
                   <div>
                     <span className="text-neutral-400 block text-[9px]">TOTAL GENERATION:</span>
-                    <span className="text-sm font-bold text-emerald-400">{totalHarvestedWatts} W</span>
+                    <span className="text-sm font-bold text-emerald-400 tabular-nums">{totalHarvestedWatts} W</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-neutral-400 block text-[9px]">NET SURPLUS CHARGE:</span>
-                    <span className={`text-sm font-bold ${netEnergyBalanceWatts >= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    <span className="text-neutral-400 block text-[9px]">NET SURPLUS (−4.2W LOAD):</span>
+                    <span className={`text-sm font-bold tabular-nums ${netEnergyBalanceWatts >= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
                       {netEnergyBalanceWatts >= 0 ? `+${netEnergyBalanceWatts} W` : `${netEnergyBalanceWatts} W`}
                     </span>
                   </div>
@@ -831,24 +1008,55 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                     <span className="font-bold text-amber-400">5.1 V</span>
                   </div>
                   <div className="p-1.5 rounded bg-neutral-900 border border-neutral-800">
-                    <span className="text-[8px] text-neutral-500 block">TODAY</span>
-                    <span className="font-bold text-emerald-400">0.42 kWh</span>
+                    <span className="text-[8px] text-neutral-500 block">BASE LOAD</span>
+                    <span className="font-bold text-sky-400">4.2 W</span>
                   </div>
+                </div>
+
+                {/* Lab Report Actions: Copy Result & Share Experiment URL */}
+                <div className="pt-2 border-t border-neutral-800 flex flex-wrap items-center gap-2 font-mono text-xs">
+                  <button
+                    id="btn-copy-lab-result"
+                    onClick={handleCopyLabResult}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer transition-colors"
+                  >
+                    {copiedResult ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedResult ? 'RESULT COPIED ✓' : 'COPY RESULT FOR LAB REPORT'}</span>
+                  </button>
+                  <button
+                    id="btn-share-experiment-url"
+                    onClick={handleCopyShareUrl}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700 font-bold cursor-pointer transition-colors"
+                  >
+                    {copiedShareUrl ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5 text-amber-400" />}
+                    <span>{copiedShareUrl ? 'URL COPIED' : 'SHARE URL'}</span>
+                  </button>
                 </div>
               </div>
             </div>
+
+              {/* SCIENTIFIC HONESTY DISCLAIMER MOVED DIRECTLY UNDER CALCULATOR */}
+              <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 space-y-1.5 text-xs text-neutral-800 leading-relaxed font-sans">
+                <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-amber-900">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>SCIENTIFIC HONESTY: NO UNJUSTIFIED ADDITIVE CLAIMS</span>
+                </div>
+                <p>
+                  This calculator is an <strong>illustrative energy-balance simulation</strong>, not a claim that a single bus-stop floor mat outputs 3.8 W continuously. In real hardware, solar panels operate in <strong>Watts (10–50 W)</strong> whereas individual PZT piezoelectric discs output <strong>milli-Joules (0.1–2 mJ/step)</strong> and cannot be casually added together without separate Schottky rectification, MPPT charge stages, and thermodynamic loss accounting.
+                </p>
+              </div>
           </div>
         </div>
         )}
 
         {/* ======================================================================= */}
-        {/* MODULE 03: CIRCUIT INTEGRATION & BUILDER (COMPACT SCREEN-FIT) */}
+        {/* MODULE 03: CIRCUIT INTEGRATION & BUILDER + SCHEMATIC THUMBNAILS + BOM */}
         {/* ======================================================================= */}
         {activeModule === 'builder' && (
           <div className="space-y-3">
             <div className="p-2.5 bg-white rounded-xl border border-[#E2E4E8] shadow-xs flex items-center justify-between text-xs font-mono">
               <span className="font-bold text-neutral-800">
-                TOPOLOGY OBJECTIVE: Connect Sources ➔ Battery ➔ MCU ➔ Sensor & Bus ➔ Display.
+                TOPOLOGY OBJECTIVE: Connect Sources ➔ Battery ➔ MCU ➔ Sensor &amp; Bus ➔ Display.
               </span>
               <button
                 id="lab-builder-reset-btn"
@@ -858,6 +1066,12 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                 Reset Links
               </button>
             </div>
+
+            {/* Live Circuit Schematic + Preview Thumbnails */}
+            <CircuitSchematicAndThumbnails
+              connectedPairs={connectedPairs}
+              onQuickHighlight={([from, to]) => toggleConnection(from, to)}
+            />
 
             {/* Node Matrix Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
@@ -931,127 +1145,87 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Bill of Materials & ESP8266 Wiring Pinout Reference */}
+            <BomAndWiringReference />
           </div>
         )}
 
         {/* ======================================================================= */}
-        {/* MODULE 04: CAD EXPLORER (COMPACT SCREEN-FIT) */}
+        {/* MODULE 04: CAD EXPLORER (2D ORTHOGRAPHIC BLUEPRINT + THUMBNAILS + BOM) */}
         {/* ======================================================================= */}
         {activeModule === 'explorer' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-            {/* Visual Hotspot Schematic (Left 7 Cols) */}
-            <div className="lg:col-span-7 bg-[#14171C] text-white p-3.5 rounded-xl border border-neutral-800 relative overflow-hidden">
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-2 text-xs font-mono text-neutral-400 mb-2">
-                <span className="text-amber-400 font-bold">2D SCHEMATIC CAD VIEW</span>
-                <span>CLICK HOTSPOT TO INSPECT</span>
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+              {/* Visual CAD Blueprint + 5 Subsystem Thumbnails (Left 7 Cols) */}
+              <div className="lg:col-span-7">
+                <CadBlueprintAndThumbnails
+                  selectedId={explorerComponentId}
+                  onSelectComponent={setExplorerComponentId}
+                />
               </div>
 
-              <div className="relative h-60 border border-neutral-800 rounded-lg bg-neutral-950 p-4 flex flex-col justify-between">
-                {/* Roof Canopy Hotspot */}
-                <button
-                  onClick={() => setExplorerComponentId('solar-pv')}
-                  className={`absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg border font-mono text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                    explorerComponentId === 'solar-pv'
-                      ? 'bg-amber-950 border-amber-400 text-amber-200 ring-1 ring-amber-400'
-                      : 'bg-neutral-900 border-neutral-700 text-neutral-300'
-                  }`}
-                >
-                  <Sun className="w-3.5 h-3.5 text-amber-400" />
-                  <span>CANOPY SOLAR ARRAY</span>
-                </button>
-
-                {/* Middle Column: Display & MCU */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
-                  <button
-                    onClick={() => setExplorerComponentId('display-interface')}
-                    className={`px-2.5 py-1.5 rounded-lg border font-mono text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                      explorerComponentId === 'display-interface'
-                        ? 'bg-sky-950 border-sky-400 text-sky-200 ring-1 ring-sky-400'
-                        : 'bg-neutral-900 border-neutral-700 text-neutral-300'
-                    }`}
-                  >
-                    <Tv className="w-3.5 h-3.5 text-sky-400" />
-                    <span>E-PAPER DISPLAY</span>
-                  </button>
-
-                  <button
-                    onClick={() => setExplorerComponentId('controller-mcu')}
-                    className={`px-2.5 py-1.5 rounded-lg border font-mono text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                      explorerComponentId === 'controller-mcu'
-                        ? 'bg-blue-950 border-blue-400 text-blue-200 ring-1 ring-blue-400'
-                        : 'bg-neutral-900 border-neutral-700 text-neutral-300'
-                    }`}
-                  >
-                    <Cpu className="w-3.5 h-3.5 text-blue-400" />
-                    <span>ESP8266 MCU</span>
-                  </button>
+              {/* Subsystem Specifications Card (Right 5 Cols) */}
+              <div className="lg:col-span-5 bg-white p-4 rounded-xl border border-[#E2E4E8] shadow-xs space-y-2.5">
+                <div className="border-b border-neutral-100 pb-2">
+                  <span className="text-[10px] font-mono font-bold text-amber-700 uppercase">
+                    INSPECTING SUBSYSTEM
+                  </span>
+                  <h3 className="text-base font-bold font-display text-neutral-900">
+                    {explorerComp.name}
+                  </h3>
                 </div>
 
-                {/* Right Edge: RFID Reader */}
-                <button
-                  onClick={() => setExplorerComponentId('rfid-reader')}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg border font-mono text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                    explorerComponentId === 'rfid-reader'
-                      ? 'bg-amber-950 border-amber-400 text-amber-200 ring-1 ring-amber-400'
-                      : 'bg-neutral-900 border-neutral-700 text-neutral-300'
-                  }`}
-                >
-                  <Radio className="w-3.5 h-3.5 text-amber-400" />
-                  <span>MFRC522 RFID SENSOR</span>
-                </button>
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <span className="font-mono font-bold text-neutral-900 uppercase block text-[10px]">
+                      FUNCTION:
+                    </span>
+                    <p className="text-neutral-600 leading-relaxed text-[11px]">{explorerComp.functionDesc}</p>
+                  </div>
 
-                {/* Floor Hotspot: Piezo Matrix */}
-                <button
-                  onClick={() => setExplorerComponentId('piezo-array')}
-                  className={`absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg border font-mono text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                    explorerComponentId === 'piezo-array'
-                      ? 'bg-emerald-950 border-emerald-400 text-emerald-200 ring-1 ring-emerald-400'
-                      : 'bg-neutral-900 border-neutral-700 text-neutral-300'
-                  }`}
-                >
-                  <Footprints className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>PIEZO FOOTSTEP MATRIX</span>
-                </button>
+                  <div>
+                    <span className="font-mono font-bold text-neutral-900 uppercase block text-[10px]">
+                      WHY IT MATTERS IN SUNSTRIDE:
+                    </span>
+                    <p className="text-neutral-600 leading-relaxed text-[11px]">{explorerComp.whyItMatters}</p>
+                  </div>
+
+                  <div className="pt-1 border-t border-neutral-100">
+                    <span className="font-mono font-bold text-neutral-900 uppercase block text-[10px] mb-1">
+                      BENCH SPECS:
+                    </span>
+                    <div className="grid grid-cols-2 gap-1.5 font-mono text-[10px]">
+                      {Object.entries(explorerComp.specs).slice(0, 4).map(([k, v]) => (
+                        <div key={k} className="p-1.5 rounded bg-[#F8F9FA] border border-[#E2E4E8]">
+                          <span className="text-neutral-500 block truncate">{k}</span>
+                          <span className="font-bold text-neutral-900 truncate block">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-neutral-100 flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => onSelectTab('docs')}
+                    className="text-xs font-mono font-bold text-neutral-900 underline hover:text-amber-700 flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Full hardware specs</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={downloadOnePageSpecPdf}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#1A1A1A] text-white font-mono text-[10px] font-bold cursor-pointer hover:bg-neutral-800"
+                  >
+                    <FileDown className="w-3 h-3 text-emerald-400" />
+                    <span>1-Page PDF</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Subsystem Specifications Card (Right 5 Cols) */}
-            <div className="lg:col-span-5 bg-white p-4 rounded-xl border border-[#E2E4E8] shadow-xs space-y-2.5">
-              <div className="border-b border-neutral-100 pb-2">
-                <span className="text-[10px] font-mono font-bold text-amber-700 uppercase">
-                  INSPECTING SUBSYSTEM
-                </span>
-                <h3 className="text-base font-bold font-display text-neutral-900">
-                  {explorerComp.name}
-                </h3>
-              </div>
-
-              <div className="space-y-2 text-xs">
-                <div>
-                  <span className="font-mono font-bold text-neutral-900 uppercase block text-[10px]">
-                    FUNCTION:
-                  </span>
-                  <p className="text-neutral-600 leading-relaxed text-[11px]">{explorerComp.functionDesc}</p>
-                </div>
-
-                <div>
-                  <span className="font-mono font-bold text-neutral-900 uppercase block text-[10px]">
-                    WHY IT MATTERS IN SUNSTRIDE:
-                  </span>
-                  <p className="text-neutral-600 leading-relaxed text-[11px]">{explorerComp.whyItMatters}</p>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-neutral-100">
-                <button
-                  onClick={() => onSelectTab('docs')}
-                  className="text-xs font-mono font-bold text-neutral-900 underline hover:text-amber-700 flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Full hardware specs in Documentation</span>
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
+            <BomAndWiringReference />
           </div>
         )}
       </main>

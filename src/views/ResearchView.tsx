@@ -16,6 +16,7 @@ import {
   Gauge,
   Clock
 } from 'lucide-react';
+import { ResearchProblems } from '../components/ResearchProblems';
 
 interface ResearchViewProps {
   onSelectTab: (tab: PageTab) => void;
@@ -63,7 +64,10 @@ export const ResearchView: React.FC<ResearchViewProps> = ({ onSelectTab }) => {
         </div>
       </section>
 
-      {/* 2. FIVE RESEARCH AREAS */}
+      {/* 2. PROBLEMS FORMULATION & ENGINEERING COUNTERMEASURES */}
+      <ResearchProblems onSelectTab={onSelectTab} />
+
+      {/* 3. FIVE RESEARCH AREAS */}
       <section className="py-20 border-b border-[#E2E4E8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-12">
@@ -194,7 +198,7 @@ export const ResearchView: React.FC<ResearchViewProps> = ({ onSelectTab }) => {
         </div>
       </section>
 
-      {/* 3. RESEARCH METHODOLOGY */}
+      {/* 4. RESEARCH METHODOLOGY */}
       <section className="py-20 bg-[#ECEEF2] border-b border-[#E2E4E8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-12">
@@ -282,7 +286,7 @@ export const ResearchView: React.FC<ResearchViewProps> = ({ onSelectTab }) => {
         </div>
       </section>
 
-      {/* 4. RESEARCH DATA SECTION */}
+      {/* 5. RESEARCH DATA SECTION */}
       <section className="py-20 bg-[#F4F5F7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-12">

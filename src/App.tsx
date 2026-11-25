@@ -20,8 +20,24 @@ import { DocumentationView } from './views/DocumentationView';
 import { ContactView } from './views/ContactView';
 
 export default function App() {
-  const [showPreloader, setShowPreloader] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<PageTab>('home');
+  const getInitialParams = () => {
+    if (typeof window === 'undefined') return { tab: 'home' as PageTab, labModule: 'tracking' as const };
+    const params = new URLSearchParams(window.location.search);
+    const hasSolarOrSteps = params.has('solar') || params.has('steps');
+    const modParam = params.get('module');
+    const validModules = ['tracking', 'energy', 'builder', 'explorer'] as const;
+    const labModule = validModules.includes(modParam as any)
+      ? (modParam as 'tracking' | 'energy' | 'builder' | 'explorer')
+      : hasSolarOrSteps
+      ? 'energy'
+      : 'tracking';
+    const tab: PageTab = hasSolarOrSteps || params.has('module') ? 'lab' : 'home';
+    return { tab, labModule };
+  };
+
+  const initial = getInitialParams();
+  const [showPreloader, setShowPreloader] = useState<boolean>(() => initial.tab === 'home');
+  const [activeTab, setActiveTab] = useState<PageTab>(initial.tab);
 
   // Handle browser back/forward or tab selection
   const handleSelectTab = (tab: PageTab) => {
@@ -54,7 +70,9 @@ export default function App() {
         {activeTab === 'home' && <HomeView onSelectTab={handleSelectTab} />}
         {activeTab === 'research' && <ResearchView onSelectTab={handleSelectTab} />}
         {activeTab === 'system' && <SystemView onSelectTab={handleSelectTab} />}
-        {activeTab === 'lab' && <InteractiveLabView onSelectTab={handleSelectTab} />}
+        {activeTab === 'lab' && (
+          <InteractiveLabView onSelectTab={handleSelectTab} initialModule={initial.labModule} />
+        )}
         {activeTab === 'impact' && <ImpactView onSelectTab={handleSelectTab} />}
         {activeTab === 'team' && <TeamView onSelectTab={handleSelectTab} />}
         {activeTab === 'about' && <AboutView onSelectTab={handleSelectTab} />}

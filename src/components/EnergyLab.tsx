@@ -40,8 +40,24 @@ export const EnergyLab: React.FC<EnergyLabProps> = ({ onExploreModule }) => {
     'suntrack' | 'stepvolt' | 'roadvolt' | 'brakeback' | 'ecofusion'
   >('suntrack');
 
-  // Reduced motion preference
+  // Reduced motion & page visibility preference (pause animations when tab hidden)
   const [reducedMotion, setReducedMotion] = useState<boolean>(false);
+  const [isTabHidden, setIsTabHidden] = useState<boolean>(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mq.matches);
+    const onVis = () => {
+      const hidden = document.hidden;
+      setIsTabHidden(hidden);
+      if (hidden) {
+        setIsSunPlaying(false);
+        setIsAutoStepping(false);
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
 
   // ---------------------------------------------------------------------------
   // INNOVATION A: SUNTRACK STATE
@@ -79,9 +95,9 @@ export const EnergyLab: React.FC<EnergyLabProps> = ({ onExploreModule }) => {
   const trackerParasiticWatts = isSunPlaying ? 0.75 : 0.05;
   const trackerNetWatts = Number(Math.max(0, trackerSimulatedWatts - trackerParasiticWatts).toFixed(2));
 
-  // Sun simulation timer
+  // Sun simulation timer (pauses automatically when browser tab is hidden)
   useEffect(() => {
-    if (!isSunPlaying) return;
+    if (!isSunPlaying || isTabHidden) return;
     const interval = setInterval(() => {
       setTimeOfDay((prev) => {
         if (prev >= 18) return 6;
@@ -89,7 +105,7 @@ export const EnergyLab: React.FC<EnergyLabProps> = ({ onExploreModule }) => {
       });
     }, 150);
     return () => clearInterval(interval);
-  }, [isSunPlaying]);
+  }, [isSunPlaying, isTabHidden]);
 
   // ---------------------------------------------------------------------------
   // INNOVATION B: STEPVOLT STATE
@@ -118,12 +134,12 @@ export const EnergyLab: React.FC<EnergyLabProps> = ({ onExploreModule }) => {
   };
 
   useEffect(() => {
-    if (!isAutoStepping) return;
+    if (!isAutoStepping || isTabHidden) return;
     const interval = setInterval(() => {
       triggerFootstep();
     }, 2600);
     return () => clearInterval(interval);
-  }, [isAutoStepping]);
+  }, [isAutoStepping, isTabHidden]);
 
   // ---------------------------------------------------------------------------
   // INNOVATION C: ROADVOLT STATE
@@ -394,16 +410,19 @@ export const EnergyLab: React.FC<EnergyLabProps> = ({ onExploreModule }) => {
               {/* Slider with visual gradient dawn to dusk */}
               <div className="space-y-1">
                 <input
+                  id="suntrack-time-slider"
                   type="range"
                   min="6"
                   max="18"
                   step="0.1"
                   value={timeOfDay}
+                  aria-label="Simulated time of day from 06:00 sunrise to 18:00 sunset"
+                  aria-valuetext={`${Math.floor(timeOfDay).toString().padStart(2, '0')}:${Math.floor((timeOfDay % 1) * 60).toString().padStart(2, '0')} hours`}
                   onChange={(e) => {
                     setIsSunPlaying(false);
                     setTimeOfDay(Number(e.target.value));
                   }}
-                  className="w-full h-2.5 bg-gradient-to-r from-amber-300 via-amber-500 to-orange-400 rounded-lg appearance-none cursor-pointer accent-neutral-900"
+                  className="w-full h-2.5 bg-gradient-to-r from-amber-300 via-amber-500 to-orange-400 rounded-lg appearance-none cursor-pointer accent-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600"
                 />
                 <div className="flex justify-between text-[10px] text-neutral-500 font-mono">
                   <span>06:00 (Sunrise East)</span>
@@ -1321,8 +1340,17 @@ export const EnergyLab: React.FC<EnergyLabProps> = ({ onExploreModule }) => {
 
               {/* Realism Matrix Table: Different Scales, Efficiencies & Roles */}
               <div className="space-y-2 pt-2">
-                <div className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider">
-                  SYSTEM REALISM MATRIX: ENERGY SCALES & BOUNDARIES
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider">
+                    SYSTEM REALISM MATRIX: ENERGY SCALES &amp; BOUNDARIES
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] font-mono">
+                    <span className="text-emerald-400 font-bold">mJ = 10⁻³ J</span>
+                    <span className="text-neutral-600">·</span>
+                    <span className="text-amber-400 font-bold">W = 10¹ J/s</span>
+                    <span className="text-neutral-600">·</span>
+                    <span className="text-sky-400 font-bold">kJ = 10³ J</span>
+                  </div>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left font-mono text-[11px] border border-neutral-800 rounded-lg overflow-hidden">
@@ -1330,37 +1358,77 @@ export const EnergyLab: React.FC<EnergyLabProps> = ({ onExploreModule }) => {
                       <tr>
                         <th className="p-2.5">INNOVATION</th>
                         <th className="p-2.5">ENERGY MECHANISM</th>
-                        <th className="p-2.5">TYPICAL SCALE</th>
+                        <th className="p-2.5">SCALE (mJ vs W vs kJ)</th>
                         <th className="p-2.5">ROLE IN SUNSTRIDE</th>
                         <th className="p-2.5">PRIMARY CHALLENGE</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-800 text-neutral-300">
                       <tr className={selectedPathway === 'suntrack' ? 'bg-amber-950/40 text-amber-300' : ''}>
-                        <td className="p-2.5 font-bold text-amber-400">SunTrack</td>
+                        <td className="p-2.5 font-bold text-amber-400">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Sun className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                            <span>SunTrack</span>
+                          </span>
+                        </td>
                         <td className="p-2.5">Photovoltaic Optical Tracking</td>
-                        <td className="p-2.5">10–50 Watts</td>
-                        <td className="p-2.5">Station logic & PID screen</td>
-                        <td className="p-2.5 text-neutral-400">Parasitic motor draw & wind loads</td>
+                        <td className="p-2.5">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold">
+                            <Sun className="w-3 h-3" />
+                            <span>W · 10–50 Watts</span>
+                          </span>
+                        </td>
+                        <td className="p-2.5">Station logic &amp; PID screen</td>
+                        <td className="p-2.5 text-neutral-400">Parasitic motor draw &amp; wind loads</td>
                       </tr>
                       <tr className={selectedPathway === 'stepvolt' ? 'bg-emerald-950/40 text-emerald-300' : ''}>
-                        <td className="p-2.5 font-bold text-emerald-400">StepVolt</td>
+                        <td className="p-2.5 font-bold text-emerald-400">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Footprints className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>StepVolt</span>
+                          </span>
+                        </td>
                         <td className="p-2.5">PZT Ceramic Piezoelectric</td>
-                        <td className="p-2.5">0.1–2 milli-Joules / step</td>
-                        <td className="p-2.5">RTC timer & wake-up interrupt</td>
+                        <td className="p-2.5">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
+                            <Footprints className="w-3 h-3" />
+                            <span>mJ · 0.1–2 mJ / step</span>
+                          </span>
+                        </td>
+                        <td className="p-2.5">RTC timer &amp; wake-up interrupt</td>
                         <td className="p-2.5 text-neutral-400">Highly intermittent, ultra-low power</td>
                       </tr>
                       <tr className={selectedPathway === 'roadvolt' ? 'bg-amber-950/40 text-amber-300' : ''}>
-                        <td className="p-2.5 font-bold text-amber-300">RoadVolt</td>
+                        <td className="p-2.5 font-bold text-orange-300">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Zap className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                            <span>RoadVolt</span>
+                          </span>
+                        </td>
                         <td className="p-2.5">Rack-and-Pinion Dynamo</td>
-                        <td className="p-2.5">1–5 Watt-hours / vehicle</td>
+                        <td className="p-2.5">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-orange-500/20 border border-orange-500/40 text-orange-300 font-bold">
+                            <Zap className="w-3 h-3" />
+                            <span>Wh · 1–5 Wh / vehicle</span>
+                          </span>
+                        </td>
                         <td className="p-2.5">Shelter perimeter night lights</td>
-                        <td className="p-2.5 text-neutral-400">Road durability & water sealing</td>
+                        <td className="p-2.5 text-neutral-400">Road durability &amp; water sealing</td>
                       </tr>
                       <tr className={selectedPathway === 'brakeback' ? 'bg-sky-950/40 text-sky-300' : ''}>
-                        <td className="p-2.5 font-bold text-sky-400">BrakeBack</td>
+                        <td className="p-2.5 font-bold text-sky-400">
+                          <span className="inline-flex items-center gap-1.5">
+                            <BatteryCharging className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                            <span>BrakeBack</span>
+                          </span>
+                        </td>
                         <td className="p-2.5">Vehicle Regenerative Inverter</td>
-                        <td className="p-2.5">50–200 kilo-Joules / stop</td>
+                        <td className="p-2.5">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-sky-500/20 border border-sky-500/40 text-sky-300 font-bold">
+                            <BatteryCharging className="w-3 h-3" />
+                            <span>kJ · 50–200 kJ / stop</span>
+                          </span>
+                        </td>
                         <td className="p-2.5">Vehicle traction battery</td>
                         <td className="p-2.5 text-neutral-400">Vehicle-level; not station hardware</td>
                       </tr>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageTab, TeamMember } from '../types';
-import { TEAM_MEMBERS } from '../data/projectData';
+import { TEAM_MEMBERS, PROJECT_CONTACT } from '../data/projectData';
 import {
   Users,
   Award,
@@ -15,7 +15,8 @@ import {
   Footprints,
   Radio,
   BookOpen,
-  ArrowRight
+  ArrowRight,
+  Mail
 } from 'lucide-react';
 import { SunStrideLogo } from '../components/SunStrideLogo';
 
@@ -427,7 +428,14 @@ export const TeamView: React.FC<TeamViewProps> = ({ onSelectTab }) => {
                 Detailed research specifications, circuit schematics, and testing logs.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href={`mailto:${PROJECT_CONTACT.email}?subject=SunStride%20ATL%20Academic%20%26%20Mentorship%20Inquiry`}
+                className="px-4 py-2 rounded bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-neutral-100 font-mono text-xs font-bold transition-colors flex items-center gap-2"
+              >
+                <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{PROJECT_CONTACT.email}</span>
+              </a>
               <button
                 onClick={() => onSelectTab('docs')}
                 className="px-4 py-2 rounded bg-white text-[#1A1A1A] font-mono text-xs font-bold hover:bg-neutral-100 transition-colors cursor-pointer flex items-center gap-2"

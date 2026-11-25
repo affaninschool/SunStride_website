@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PageTab } from '../types';
 import { Radio, ArrowRight, Menu, X, Cpu, ShieldCheck, ExternalLink, LayoutDashboard } from 'lucide-react';
 import { SunStrideLogo } from './SunStrideLogo';
+import { StickyMiniNav } from './StickyMiniNav';
 
 interface NavbarProps {
   activeTab: PageTab;
@@ -87,8 +88,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
                 RESEARCH
               </span>
             </div>
-            <span className="text-[10px] text-[#6B7280] font-mono tracking-wider -mt-0.5 hidden sm:block">
-              SMART MOBILITY & RENEWABLE STATION
+            <span className="text-[10px] text-[#374151] font-mono tracking-tight -mt-0.5 hidden sm:block">
+              Working ATL prototype: ESP8266 + RFID bus tracking + solar/piezo station power.
             </span>
           </div>
         </div>
@@ -201,6 +202,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onReplay
           </a>
         </div>
       )}
+
+      {/* Sticky Mini-Nav & Progress Bar (activates automatically on 2500px+ pages) */}
+      <StickyMiniNav activeTab={activeTab} hideContentBar={mobileMenuOpen} />
     </header>
   );
 };

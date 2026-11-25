@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { PageTab } from '../types';
-import { FileText, Printer, Check, Copy, ChevronRight, Download, BookOpen, ShieldCheck } from 'lucide-react';
+import { FileText, Printer, Check, Copy, ChevronRight, Download, BookOpen, ShieldCheck, FileDown } from 'lucide-react';
 import { SunStrideLogo } from '../components/SunStrideLogo';
+import { downloadOnePageSpecPdf } from '../utils/specPdfGenerator';
+import { BomAndWiringReference } from '../components/CircuitAndCadVisuals';
 
 interface DocumentationViewProps {
   onSelectTab: (tab: PageTab) => void;
@@ -52,7 +54,15 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </p>
             </div>
 
-            <div className="flex items-center gap-3 self-start md:self-auto font-mono text-xs">
+            <div className="flex flex-wrap items-center gap-3 self-start md:self-auto font-mono text-xs">
+              <button
+                id="btn-download-spec-pdf"
+                onClick={downloadOnePageSpecPdf}
+                className="flex items-center gap-1.5 px-4 py-2 rounded bg-[#1A1A1A] text-white hover:bg-neutral-800 cursor-pointer shadow-xs font-bold"
+              >
+                <FileDown className="w-3.5 h-3.5 text-emerald-400" />
+                <span>DOWNLOAD 1-PAGE SPEC PDF</span>
+              </button>
               <button
                 onClick={handleCopyCitation}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded bg-white border border-[#D1D5DB] text-[#374151] hover:bg-[#ECEEF2] cursor-pointer shadow-xs"
@@ -71,7 +81,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Sticky Table of Contents (Left 4 Cols) */}
             <div className="lg:col-span-4">
-              <div className="sticky top-28 bg-white p-5 rounded-lg border border-[#E2E4E8] shadow-xs space-y-3 font-mono">
+              <div className="sticky top-36 bg-white p-5 rounded-lg border border-[#E2E4E8] shadow-xs space-y-3 font-mono">
                 <div className="flex items-center justify-between border-b border-[#F3F4F6] pb-2">
                   <span className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">
                     DOCUMENT SECTIONS
@@ -97,6 +107,16 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
                     );
                   })}
                 </nav>
+
+                <div className="pt-3 border-t border-[#F3F4F6]">
+                  <button
+                    onClick={downloadOnePageSpecPdf}
+                    className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer transition-colors"
+                  >
+                    <FileDown className="w-3.5 h-3.5" />
+                    <span>1-Page Spec PDF</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -150,7 +170,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 1. PROJECT OVERVIEW */}
-              <div id="sec-overview" className="space-y-3 scroll-mt-28">
+              <div id="sec-overview" className="space-y-3 scroll-mt-36">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 01</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">1. Project Overview</h2>
                 <p>
@@ -159,7 +179,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 2. PROBLEM STATEMENT */}
-              <div id="sec-problem" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-problem" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 02</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">2. Problem Statement</h2>
                 <p>
@@ -168,7 +188,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 3. OBJECTIVES */}
-              <div id="sec-objectives" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-objectives" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 03</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">3. Engineering Objectives</h2>
                 <ul className="list-disc pl-5 space-y-2 text-[#4B5563]">
@@ -180,7 +200,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 4. SYSTEM DESIGN */}
-              <div id="sec-system" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-system" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 04</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">4. System Architecture & Topology</h2>
                 <p>
@@ -195,7 +215,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 5. HARDWARE SPECIFICATIONS */}
-              <div id="sec-hardware" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-hardware" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 05</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">5. Hardware Specifications</h2>
                 <div className="overflow-x-auto">
@@ -236,10 +256,14 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
                     </tbody>
                   </table>
                 </div>
+
+                <div className="pt-4">
+                  <BomAndWiringReference />
+                </div>
               </div>
 
               {/* 6. ENERGY SYSTEM */}
-              <div id="sec-energy" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-energy" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 06</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">6. Energy System & Power Conditioning</h2>
                 <p>
@@ -248,7 +272,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 7. SOFTWARE LOGIC */}
-              <div id="sec-software" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-software" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 07</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">7. Software Logic & State Machine</h2>
                 <p>
@@ -270,7 +294,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 8. TESTING PROTOCOLS */}
-              <div id="sec-testing" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-testing" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 08</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">8. Laboratory Testing Protocols</h2>
                 <p>
@@ -279,7 +303,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 9. QUALITATIVE RESULTS */}
-              <div id="sec-results" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-results" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 09</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">9. Qualitative Results</h2>
                 <p>
@@ -288,7 +312,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 10. LIMITATIONS */}
-              <div id="sec-limitations" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-limitations" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 10</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">10. Technical Limitations & Edge Cases</h2>
                 <ul className="list-disc pl-5 space-y-2 text-[#4B5563]">
@@ -299,7 +323,7 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
               </div>
 
               {/* 11. FUTURE SCOPE */}
-              <div id="sec-future" className="space-y-3 scroll-mt-28 border-t border-[#F3F4F6] pt-8">
+              <div id="sec-future" className="space-y-3 scroll-mt-36 border-t border-[#F3F4F6] pt-8">
                 <span className="font-mono text-xs font-bold text-emerald-600 uppercase">SECTION 11</span>
                 <h2 className="text-2xl font-bold font-display text-[#1A1A1A]">11. Future Scope & Field Trials</h2>
                 <p>

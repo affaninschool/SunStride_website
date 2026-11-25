@@ -165,13 +165,22 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
               <p className="text-[10px] text-neutral-500 leading-tight">
                 Designed to investigate feasibility without marketing exaggeration or unverified commercial claims.
               </p>
-              <button
-                id="footer-link-contact"
-                onClick={() => handleNavClick('contact')}
-                className="inline-block mt-2 text-xs text-white underline decoration-neutral-600 hover:decoration-white cursor-pointer"
-              >
-                Inquire / Academic Contact →
-              </button>
+              <div className="pt-2 flex flex-col gap-1.5">
+                <a
+                  id="footer-mailto-contact"
+                  href="mailto:pedomatrix@gmail.com?subject=SunStride%20ATL%20Smart%20Station%20Inquiry"
+                  className="inline-block text-xs text-emerald-400 hover:text-emerald-300 underline decoration-emerald-700 hover:decoration-emerald-400 cursor-pointer font-semibold"
+                >
+                  Email Lab: pedomatrix@gmail.com →
+                </a>
+                <button
+                  id="footer-link-contact"
+                  onClick={() => handleNavClick('contact')}
+                  className="inline-block text-left text-xs text-white underline decoration-neutral-600 hover:decoration-white cursor-pointer"
+                >
+                  Inquire / Academic Contact Form →
+                </button>
+              </div>
             </div>
           </div>
         </div>
