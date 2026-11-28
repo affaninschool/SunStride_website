@@ -506,7 +506,7 @@ export const BomAndWiringReference: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-bold cursor-pointer shadow-xs"
           >
             <FileDown className="w-3.5 h-3.5" />
-            <span>1-Page Spec PDF</span>
+            <span>Tech Spec PDF</span>
           </button>
         </div>
       </div>

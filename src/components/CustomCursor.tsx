@@ -46,12 +46,16 @@ export const CustomCursor: React.FC = () => {
         trailRefs.current = Array.from({ length: TRAIL_COUNT }, () => ({ x: clientX, y: clientY }));
       }
 
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
+      const target = e.target;
+      if (!(target instanceof Element)) return;
 
       // Context detection (Tour Modal, dark surfaces, etc.)
       const tourEl = target.closest('[data-tour-modal], .tour-modal-overlay, .tour-modal-container') as HTMLElement | null;
-      const darkEl = !!tourEl || !!target.closest('.dark, .bg-neutral-900, .bg-neutral-950, .bg-[#121417], .bg-[#0A0A0A], footer, [data-theme="dark"]');
+      const darkEl =
+        !!tourEl ||
+        !!target.closest(
+          '.dark, .bg-neutral-900, .bg-neutral-950, [class*="bg-[#121417]"], [class*="bg-[#0A0A0A]"], [class*="bg-[#14171C]"], footer, [data-theme="dark"]'
+        );
       
       setIsOverTour(!!tourEl);
       setIsDarkSurface(darkEl);

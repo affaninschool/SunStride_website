@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { PageTab } from '../types';
-import { FileText, Printer, Check, Copy, ChevronRight, Download, BookOpen, ShieldCheck, FileDown } from 'lucide-react';
+import { FileText, Printer, Check, Copy, ChevronRight, Download, BookOpen, ShieldCheck, FileDown, Eye, EyeOff } from 'lucide-react';
 import { SunStrideLogo } from '../components/SunStrideLogo';
-import { downloadOnePageSpecPdf } from '../utils/specPdfGenerator';
+import { downloadOnePageSpecPdf, TECH_SPEC_PDF_URL, TECH_SPEC_PDF_FILENAME } from '../utils/specPdfGenerator';
 import { BomAndWiringReference } from '../components/CircuitAndCadVisuals';
 
 interface DocumentationViewProps {
@@ -12,6 +12,7 @@ interface DocumentationViewProps {
 export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTab }) => {
   const [activeSection, setActiveSection] = useState<string>('sec-overview');
   const [copied, setCopied] = useState(false);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
 
   const docSections = [
     { id: 'sec-overview', title: '1. Project Overview' },
@@ -55,14 +56,15 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
             </div>
 
             <div className="flex flex-wrap items-center gap-3 self-start md:self-auto font-mono text-xs">
-              <button
+              <a
                 id="btn-download-spec-pdf"
-                onClick={downloadOnePageSpecPdf}
+                href={TECH_SPEC_PDF_URL}
+                download={TECH_SPEC_PDF_FILENAME}
                 className="flex items-center gap-1.5 px-4 py-2 rounded bg-[#1A1A1A] text-white hover:bg-neutral-800 cursor-pointer shadow-xs font-bold"
               >
                 <FileDown className="w-3.5 h-3.5 text-emerald-400" />
-                <span>DOWNLOAD 1-PAGE SPEC PDF</span>
-              </button>
+                <span>DOWNLOAD TECH SPEC PDF</span>
+              </a>
               <button
                 onClick={handleCopyCitation}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded bg-white border border-[#D1D5DB] text-[#374151] hover:bg-[#ECEEF2] cursor-pointer shadow-xs"
@@ -108,13 +110,21 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
                   })}
                 </nav>
 
-                <div className="pt-3 border-t border-[#F3F4F6]">
+                <div className="pt-3 border-t border-[#F3F4F6] space-y-2">
                   <button
                     onClick={downloadOnePageSpecPdf}
                     className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer transition-colors"
                   >
                     <FileDown className="w-3.5 h-3.5" />
-                    <span>1-Page Spec PDF</span>
+                    <span>Tech Spec PDF</span>
+                  </button>
+                  <button
+                    id="btn-toggle-pdf-preview-sidebar"
+                    onClick={() => setShowPdfPreview((v) => !v)}
+                    className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-[#F4F5F7] hover:bg-[#E2E4E8] text-[#1A1A1A] border border-[#DCDFE4] text-[11px] font-bold cursor-pointer transition-colors"
+                  >
+                    {showPdfPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span>{showPdfPreview ? 'Hide PDF Preview' : 'Preview Spec PDF'}</span>
                   </button>
                 </div>
               </div>
@@ -167,6 +177,46 @@ export const DocumentationView: React.FC<DocumentationViewProps> = ({ onSelectTa
                     </a>
                   </div>
                 </div>
+
+                {/* Embedded Official Technical Specification PDF Strip */}
+                <div className="p-3.5 rounded-lg bg-[#14171C] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <div className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider">
+                      OFFICIAL EXHIBITION HANDOUT (TECHNICAL SPEC PDF)
+                    </div>
+                    <div className="text-xs font-mono text-neutral-300">
+                      SunStride Smart Station — Pinout, BOM, Energy Realism &amp; Credits
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 font-mono text-xs">
+                    <button
+                      id="btn-toggle-pdf-preview"
+                      onClick={() => setShowPdfPreview((v) => !v)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-neutral-100 font-bold cursor-pointer"
+                    >
+                      {showPdfPreview ? <EyeOff className="w-3.5 h-3.5 text-amber-400" /> : <Eye className="w-3.5 h-3.5 text-amber-400" />}
+                      <span>{showPdfPreview ? 'HIDE PDF' : 'PREVIEW PDF'}</span>
+                    </button>
+                    <a
+                      href={TECH_SPEC_PDF_URL}
+                      download={TECH_SPEC_PDF_FILENAME}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                    >
+                      <FileDown className="w-3.5 h-3.5" />
+                      <span>DOWNLOAD</span>
+                    </a>
+                  </div>
+                </div>
+
+                {showPdfPreview && (
+                  <div className="rounded-lg border border-[#DCDFE4] overflow-hidden bg-[#F8F9FA]">
+                    <iframe
+                      src={TECH_SPEC_PDF_URL}
+                      title="SunStride Smart Station Technical Specification PDF"
+                      className="w-full h-[640px] border-0"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* 1. PROJECT OVERVIEW */}

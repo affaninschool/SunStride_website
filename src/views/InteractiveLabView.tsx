@@ -415,7 +415,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
               id="btn-lab-spec-pdf"
               onClick={downloadOnePageSpecPdf}
               className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-300 font-mono text-[11px] font-bold shadow-xs cursor-pointer"
-              title="Download 1-Page Technical Specification PDF"
+              title="Download Technical Specification PDF"
             >
               <FileDown className="w-3.5 h-3.5 text-emerald-700" />
               <span>SPEC PDF</span>
@@ -1219,7 +1219,7 @@ export const InteractiveLabView: React.FC<InteractiveLabViewProps> = ({
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#1A1A1A] text-white font-mono text-[10px] font-bold cursor-pointer hover:bg-neutral-800"
                   >
                     <FileDown className="w-3 h-3 text-emerald-400" />
-                    <span>1-Page PDF</span>
+                    <span>Tech Spec PDF</span>
                   </button>
                 </div>
               </div>
